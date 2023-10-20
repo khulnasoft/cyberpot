@@ -1,0 +1,42 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: CyberPot
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - name: Deutsche Telekom Security GmbH
+    address: Bonner Talweg 100
+    city: Bonn
+    country: DE
+    post-code: '53113'
+    website: 'https://github.com/khulnasoft'
+  - given-names: Marco
+    family-names: Ochse
+    affiliation: Deutsche KhulnaSoft Security GmbH
+identifiers:
+  - type: url
+    value: >-
+      https://github.com/khulnasoft/cyberpot/releases/tag/22.04.0
+    description: CyberPot Release 22.04.0
+repository-code: 'https://github.com/khulnasoft/cyberpot'
+abstract: >-
+  CyberPot is the all in one, optionally distributed, multiarch
+  (amd64, arm64) honeypot plattform, supporting 20+
+  honeypots and countless visualization options using the
+  Elastic Stack, animated live attack maps and lots of
+  security tools to further improve the deception
+  experience.
+keywords:
+  - honeypot
+  - deception
+  - cyberpot
+  - telekom security
+  - docker
+  - elk
+license: GPL-3.0
+version: 22.04.0
+date-released: '2022-04-12'
