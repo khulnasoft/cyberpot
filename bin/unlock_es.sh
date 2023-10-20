@@ -16,3 +16,4 @@ fi
 echo "### Trying to unlock all ES indices for read / write operation: "
 curl -XPUT -H "Content-Type: application/json" ''$myES'_all/_settings' -d '{"index.blocks.read_only_allow_delete": null}'
 echo
+

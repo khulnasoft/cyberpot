@@ -58,3 +58,4 @@ elif [ "$1" == "base" ];
   then
     tar cvfz "elkbase_"$myDATE".tgz" $myKIBANAINDEXPATH
 fi
+
