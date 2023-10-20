@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+
+# CyberPot Init Service
+  cyberpotinit:
+    build: .
+    container_name: cyberpotinit
+    restart: "no" 
+    image: "dtagdevsec/cyberpotinit:2204"
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+    network_mode: "host"
+    cap_add:
+     - NET_ADMIN
