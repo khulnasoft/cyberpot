@@ -15,8 +15,8 @@ RUN apk -U --no-cache add \
 # Install from GitHub and setup
     mkdir -p /opt && \
     cd /opt/ && \
-    git clone https://github.com/t3chn0m4g3/t-pot-attack-map -b 2.0.1 && \
-    cd t-pot-attack-map && \
+    git clone https://github.com/t3chn0m4g3/cyberpot-attack-map -b 2.0.1 && \
+    cd cyberpot-attack-map && \
 #    git checkout eaf8d123d72a62e4c12093e4e8487e10e6ef60f3 && \
 #    git branch -a && \
 #    git checkout multi && \
@@ -27,16 +27,16 @@ RUN apk -U --no-cache add \
 # Setup user, groups and configs
     addgroup -g 2000 map && \
     adduser -S -H -s /bin/ash -u 2000 -D -g 2000 map && \
-    chown map:map -R /opt/t-pot-attack-map && \
+    chown map:map -R /opt/cyberpot-attack-map && \
 #
 # Clean up
     apk del --purge build-base \
                     git \
 		    python3-dev && \
-    rm -rf /root/* /var/cache/apk/* /opt/t-pot-attack-map/.git
+    rm -rf /root/* /var/cache/apk/* /opt/cyberpot-attack-map/.git
 #
 # Start CyberPot-Attack-Map
 STOPSIGNAL SIGINT
 USER map:map
-WORKDIR /opt/t-pot-attack-map
+WORKDIR /opt/cyberpot-attack-map
 CMD /usr/bin/python3 $MAP_COMMAND
