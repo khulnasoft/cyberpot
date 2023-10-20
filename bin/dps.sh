@@ -51,7 +51,7 @@ function fuGETSYS {
 printf "[ ========| System |======== ]\n"
 printf "${myBLUE}%+11s ${myWHITE}%-20s\n" "DATE: " "$(date)"
 printf "${myBLUE}%+11s ${myWHITE}%-20s\n" "UPTIME: " "$(grc --colour=on uptime)"
-printf "${myMAGENTA}%+11s %-20s\n" "T-POT: " "$(fuGETCYBERPOT_STATUS)"
+printf "${myMAGENTA}%+11s %-20s\n" "CYBERPOT: " "$(fuGETCYBERPOT_STATUS)"
 printf "${myMAGENTA}%+11s %-20s\n" "BLACKHOLE: " "$myBLACKHOLE_STATUS${myWHITE}"
 echo
 }
