@@ -16,7 +16,7 @@ services:
      - /opt/cyberpot/etc/compose/elk_environment
     ports:
      - "127.0.0.1:64305:64305"
-    image: "khulnasoft/logstash:2204"
+    image: "dtagdevsec/logstash:2204"
     volumes:
      - /data:/data
 #     - /root/cyberpot/docker/elk/logstash/dist/logstash.conf:/etc/logstash/conf.d/logstash.conf

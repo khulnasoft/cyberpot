@@ -7,7 +7,7 @@ services:
     build: .
     container_name: cyberpotinit
     restart: "no" 
-    image: "khulnasoft/cyberpotinit:2204"
+    image: "dtagdevsec/cyberpotinit:2204"
 #    volumes:
 #      - /var/run/docker.sock:/var/run/docker.sock:ro
     network_mode: "host"
