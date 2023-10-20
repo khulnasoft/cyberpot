@@ -10,8 +10,8 @@ CyberPot will be turning 10 years next year and this milestone will be celebrate
 4. Locate installer for your distribution: `$ cd cyberpot/preview/installer/<distro>`
 5. Run installer as non-root: `$ ./install.sh`
    * Follow instructions, read messages, check for possible port conflicts and reboot
-7. [Set](#t-pot-config-file) username and password in config `.env`: `vi preview/.env`
-8. [Start](#start-t-pot) CyberPot for the first time:
+7. [Set](#cyberpot-config-file) username and password in config `.env`: `vi preview/.env`
+8. [Start](#start-cyberpot) CyberPot for the first time:
 ```
 $ cd cyberpot/preview/
 $ docker compose up
@@ -27,13 +27,13 @@ $ docker compose up
   - [Architecture](#architecture)
 - [Installation](#installation)
   - [Choose your distro](#choose-your-distro)
-  - [Get and Install CyberPot](#get-and-install-t-pot)
-  - [CyberPot Config File](#t-pot-config-file)
+  - [Get and Install CyberPot](#get-and-install-cyberpot)
+  - [CyberPot Config File](#cyberpot-config-file)
   - [macOS & Windows](#macos--windows)
-- [Start CyberPot](#start-t-pot)
-- [Stop CyberPot](#stop-t-pot)
-- [Uninstall CyberPot](#uninstall-t-pot)
-- [Feedback](#uninstall-t-pot)
+- [Start CyberPot](#start-cyberpot)
+- [Stop CyberPot](#stop-cyberpot)
+- [Uninstall CyberPot](#uninstall-cyberpot)
+- [Feedback](#uninstall-cyberpot)
 
 <br><br>
 
@@ -150,7 +150,7 @@ To get things up and running just follow these steps:
 CYBERPOT_OSTYPE=mac
 ```
 5. You have to ensure on your own there are no port conflicts keeping CyberPot from starting up.
-You can follow the README on how to [Start CyberPot](#start-t-pot), however you may skip the **crontab**.
+You can follow the README on how to [Start CyberPot](#start-cyberpot), however you may skip the **crontab**.
 
 
 # Start CyberPot
@@ -175,7 +175,7 @@ docker compose -f /<path_to_cyberpot_>/cyberpot/preview/docker-compose.yml up -d
 # Stop CyberPot
 1. Change into the **cyberpot/preview/** folder: `$ cd cyberpot/preview/`
 2. Run: `$ docker compose down -v` (notice the missing dash, `docker-compose` no longer exists with the latest docker installation)
-3. Docker will now stop all running CyberPot containers and disable reboot persistence (unless you made a [crontab entry](#start-t-pot)
+3. Docker will now stop all running CyberPot containers and disable reboot persistence (unless you made a [crontab entry](#start-cyberpot)
    * You can also run `$ docker compose -f /<path_to_cyberpot>/cyberpot/preview/docker-compose.yml down -v` directly if you want to avoid to change into the `preview` folder or add an alias of your choice.
  
 # Uninstall CyberPot
