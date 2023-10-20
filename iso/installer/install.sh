@@ -403,7 +403,7 @@ for i in "$@"
         echo
         echo "--conf=<Path to \"cyberpot.conf\">"
 	echo "  Use this if you want to automatically deploy a CyberPot instance (--type=auto implied)."
-        echo "  A configuration example is available in \"cyberpotce/iso/installer/cyberpot.conf.dist\"."
+        echo "  A configuration example is available in \"cyberpot/iso/installer/cyberpot.conf.dist\"."
         echo
         echo "--type=<[user, auto, iso]>"
 	echo "  user, use this if you want to manually install a CyberPot on a Debian (Stable) machine."

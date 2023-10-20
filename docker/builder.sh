@@ -28,7 +28,7 @@ fi
 
 # Only run with command switch
 if [ "$1" == "" ]; then
-  echo "### T-Pot Multi Arch Image Builder."
+  echo "### CyberPot Multi Arch Image Builder."
   echo "## Usage: builder.sh [build, push]"
   echo "## build - Just build images, do not push."
   echo "## push - Build and push images."

@@ -46,7 +46,7 @@ export mySSHUSER
 
 # Build issue
 echo "[H[2J" > /etc/issue
-toilet -f ivrit -F metal --filter border:metal "T-Pot   22.04" | sed 's/\\/\\\\/g' >> /etc/issue
+toilet -f ivrit -F metal --filter border:metal "CyberPot   22.04" | sed 's/\\/\\\\/g' >> /etc/issue
 echo >> /etc/issue
 echo ",---- [ [1;34m\n[0m ] [ [0;34m\d[0m ] [ [1;30m\t[0m ]" >> /etc/issue
 echo "|" >> /etc/issue
@@ -78,7 +78,7 @@ if [ -s "/data/elk/logstash/ls_environment" ];
   then
     source /data/elk/logstash/ls_environment
     tee -a /opt/cyberpot/etc/compose/elk_environment << EOF
-MY_TPOT_TYPE=$MY_TPOT_TYPE
+MY_CYBERPOT_TYPE=$MY_CYBERPOT_TYPE
 MY_SENSOR_PRIVATEKEYFILE=$MY_SENSOR_PRIVATEKEYFILE
 MY_HIVE_USERNAME=$MY_HIVE_USERNAME
 MY_HIVE_IP=$MY_HIVE_IP

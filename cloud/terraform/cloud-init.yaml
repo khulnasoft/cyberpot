@@ -18,7 +18,7 @@ chpasswd:
 write_files:
   - content: |
       # cyberpot configuration file
-      myCONF_TPOT_FLAVOR='${cyberpot_flavor}'
+      myCONF_CYBERPOT_FLAVOR='${cyberpot_flavor}'
       myCONF_WEB_USER='${web_user}'
       myCONF_WEB_PW='${web_password}'
     owner: root:root
