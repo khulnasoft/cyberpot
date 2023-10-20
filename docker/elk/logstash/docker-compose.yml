@@ -1,0 +1,24 @@
+version: '2.3'
+
+services:
+
+## Logstash service
+  logstash:
+    build: .
+    container_name: logstash
+    restart: always
+#    environment:
+#     - LS_JAVA_OPTS=-Xms2048m -Xmx2048m
+#    depends_on:
+#      elasticsearch:
+#        condition: service_healthy
+    env_file:
+     - /opt/cyberpot/etc/compose/elk_environment
+    ports:
+     - "127.0.0.1:64305:64305"
+    image: "dtagdevsec/logstash:2204"
+    volumes:
+     - /data:/data
+#     - /root/cyberpot/docker/elk/logstash/dist/logstash.conf:/etc/logstash/conf.d/logstash.conf
+#     - /root/cyberpot/docker/elk/logstash/dist/http.conf:/etc/logstash/conf.d/http.conf
+#     - /root/cyberpot/docker/elk/logstash/dist/logstash.yml:/etc/logstash/conf.d/logstash.yml
