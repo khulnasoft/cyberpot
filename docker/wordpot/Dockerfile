@@ -25,7 +25,7 @@ RUN apk -U --no-cache add \
     cd /opt/ && \
     git clone https://github.com/Cyb3rhq/wordpot && \
     cd wordpot && \
-    git checkout 8fedeb1b74e1d225da2a7273656bf0afa84a20aa && \
+    git checkout master && \
     cp /root/dist/requirements.txt . && \
     pip3 install --break-system-packages -r requirements.txt && \
     setcap cap_net_bind_service=+ep $(readlink -f $(type -P python3)) && \

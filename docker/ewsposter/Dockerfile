@@ -27,7 +27,7 @@ RUN apk -U --no-cache add \
 
 #
 # Setup ewsposter
-    git clone https://github.com/khulnasoft/ewsposter -b v1.25.0 /opt/ewsposter && \
+    git clone https://github.com/Cyb3rhq/ewsposter -b master /opt/ewsposter && \
     mkdir -p /opt/ewsposter/spool /opt/ewsposter/log && \
 #
 # Setup user and groups

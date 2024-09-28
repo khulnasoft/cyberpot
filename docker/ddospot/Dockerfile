@@ -23,7 +23,7 @@ RUN apk --no-cache -U add \
     cd /opt/ && \
     git clone https://github.com/aelth/ddospot && \
     cd ddospot && \
-    git checkout 49f515237bd2d5744290ed21dcca9b53def243ba && \
+    git checkout master && \
     # We only want JSON events, setting logger format to ('') ...
     sed -i "/handler.setFormatter(logging.Formatter(/{n;N;d}" /opt/ddospot/ddospot/core/potloader.py && \
     sed -i "s#handler.setFormatter(logging.Formatter(#handler.setFormatter(logging.Formatter(''))#g" /opt/ddospot/ddospot/core/potloader.py && \
@@ -37,7 +37,7 @@ RUN apk --no-cache -U add \
     sed -i "s#rotate_size = 10#rotate_size = 9999#g" /opt/ddospot/ddospot/pots/chargen/chargenpot.conf && \
     sed -i "s#rotate_size = 10#rotate_size = 9999#g" /opt/ddospot/ddospot/pots/dns/dnspot.conf && \
     sed -i "s#rotate_size = 10#rotate_size = 9999#g" /opt/ddospot/ddospot/pots/generic/genericpot.conf && \
-    sed -i "s#rotate_size = 10#rotate_size = 9999#g" /opt/ddospot/ddospot/pots/ntp/ncyberpot.conf && \
+    sed -i "s#rotate_size = 10#rotate_size = 9999#g" /opt/ddospot/ddospot/pots/ntp/ntpot.conf && \
     sed -i "s#rotate_size = 10#rotate_size = 9999#g" /opt/ddospot/ddospot/pots/ssdp/ssdpot.conf && \
     cp /root/dist/requirements.txt . && \
     pip3 install --break-system-packages -r ddospot/requirements.txt && \

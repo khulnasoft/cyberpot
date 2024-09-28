@@ -13,7 +13,7 @@ RUN apk -U --no-cache add \
 # Install from GitHub and setup
     mkdir -p /opt && \
     cd /opt/ && \
-    git clone https://github.com/khulnasoft-lab/cyberpot-attack-map -b 2.2.0 && \
+    git clone https://github.com/khulnasoft-lab/cyberpot-attack-map -b 2.2.2 && \
     cd cyberpot-attack-map && \
     pip3 install --break-system-packages --upgrade pip && \
     pip3 install --break-system-packages -r requirements.txt && \

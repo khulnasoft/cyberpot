@@ -13,7 +13,7 @@ RUN apk --no-cache -U add \
 # Install CitrixHoneypot from GitHub
     git clone https://github.com/Cyb3rhq/CitrixHoneypot /opt/citrixhoneypot && \
     cd /opt/citrixhoneypot && \
-    git checkout f59ad7320dc5bbb8c23c8baa5f111b52c52fbef3 && \
+    git checkout master && \
 #
 # Setup user, groups and configs
     mkdir -p /opt/citrixhoneypot/logs /opt/citrixhoneypot/ssl && \
