@@ -1,22 +1,19 @@
-version: '2.3'
-
 networks:
   citrixhoneypot_local:
 
 services:
-
-# CitrixHoneypot service
+  # CitrixHoneypot service
   citrixhoneypot:
     build: .
     container_name: citrixhoneypot
     restart: always
-#    cpu_count: 1
-#    cpus: 0.25
+    #    cpu_count: 1
+    #    cpus: 0.25
     networks:
-     - citrixhoneypot_local
+      - citrixhoneypot_local
     ports:
-     - "443:443"
-    image: "khulnasoft/citrixhoneypot:2204"
+      - "443:443"
+    image: "khulnasoft/citrixhoneypot:24.04"
     read_only: true
     volumes:
-     - /data/citrixhoneypot/logs:/opt/citrixhoneypot/logs
+      - $HOME/cyberpot/data/citrixhoneypot/log:/opt/citrixhoneypot/logs

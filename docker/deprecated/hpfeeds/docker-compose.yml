@@ -16,4 +16,4 @@ services:
      - hpfeeds_local
     ports:
      - "20000:20000"
-    image: "ghcr.io/khulnasoft/hpfeeds:latest"
+    image: "ghcr.io/telekom-security/hpfeeds:latest"

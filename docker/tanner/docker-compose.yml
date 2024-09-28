@@ -1,119 +1,116 @@
-version: '2.3'
-
 networks:
   tanner_local:
 
 services:
-
-# Tanner Redis Service
+  # Tanner Redis Service
   tanner_redis:
     build: ./redis
     container_name: tanner_redis
     restart: always
     stop_signal: SIGKILL
     tty: true
-#    cpu_count: 1
-#    cpus: 0.25
+    #    cpu_count: 1
+    #    cpus: 0.25
     networks:
-     - tanner_local
-    image: "khulnasoft/redis:2204"
+      - tanner_local
+    image: "khulnasoft/redis:24.04"
     read_only: true
 
-# PHP Sandbox service
+  # PHP Sandbox service
   tanner_phpox:
     build: ./phpox
     container_name: tanner_phpox
     restart: always
     stop_signal: SIGKILL
     tmpfs:
-     - /tmp:uid=2000,gid=2000
+      - /tmp:uid=2000,gid=2000
     tty: true
-#    cpu_count: 1
-#    cpus: 0.25
+    #    cpu_count: 1
+    #    cpus: 0.25
     networks:
-     - tanner_local
-    image: "khulnasoft/phpox:2204"
+      - tanner_local
+    image: "khulnasoft/phpox:24.04"
     read_only: true
 
-# Tanner API Service
+  # Tanner API Service
   tanner_api:
     build: ./tanner
     container_name: tanner_api
     restart: always
     stop_signal: SIGKILL
     tmpfs:
-     - /tmp/tanner:uid=2000,gid=2000
+      - /tmp/tanner:uid=2000,gid=2000
     tty: true
-#    cpu_count: 1
-#    cpus: 0.25
+    #    cpu_count: 1
+    #    cpus: 0.25
     networks:
-     - tanner_local
-    image: "khulnasoft/tanner:2204"
+      - tanner_local
+    image: "khulnasoft/tanner:24.04"
     read_only: true
     volumes:
-     - /data/tanner/log:/var/log/tanner
-    command: tannerapi 
+      - $HOME/cyberpot/data/tanner/log:/var/log/tanner
+    command: tannerapi
     depends_on:
-     - tanner_redis
+      - tanner_redis
 
-# Tanner WEB Service
-#  tanner_web:
-#    build: ./tanner
-#    container_name: tanner_web
-#    restart: always
-#    stop_signal: SIGKILL
-#    tmpfs:
-#     - /tmp/tanner:uid=2000,gid=2000
-#    tty: true
-#    networks:
-#     - tanner_local
-#    ports:
-#     - "127.0.0.1:8091:8091"
-#    image: "khulnasoft/tanner:2204"
-#    command: tannerweb
-#    read_only: true
-#    volumes:
-#     - /data/tanner/log:/var/log/tanner
-#    depends_on:
-#     - tanner_redis
+  # Tanner WEB Service
+  #  tanner_web:
+  #    build: ./tanner
+  #    container_name: tanner_web
+  #    restart: always
+  #    stop_signal: SIGKILL
+  #    tmpfs:
+  #     - /tmp/tanner:uid=2000,gid=2000
+  #    tty: true
+  #    networks:
+  #     - tanner_local
+  #    ports:
+  #     - "127.0.0.1:8091:8091"
+  #    image: "khulnasoft/tanner:24.04"
+  #    command: tannerweb
+  #    read_only: true
+  #    volumes:
+  #     - /data/tanner/log:/var/log/tanner
+  #    depends_on:
+  #     - tanner_redis
 
-# Tanner Service
+  # Tanner Service
   tanner:
     build: ./tanner
     container_name: tanner
     restart: always
     stop_signal: SIGKILL
     tmpfs:
-     - /tmp/tanner:uid=2000,gid=2000
+      - /tmp/tanner:uid=2000,gid=2000
     tty: true
-#    cpu_count: 1
-#    cpus: 0.25
+    #    cpu_count: 1
+    #    cpus: 0.25
     networks:
-     - tanner_local
-    image: "khulnasoft/tanner:2204"
+      - tanner_local
+    image: "khulnasoft/tanner:24.04"
     command: tanner
     read_only: true
     volumes:
-     - /data/tanner/log:/var/log/tanner
-     - /data/tanner/files:/opt/tanner/files
+      - $HOME/cyberpot/data/tanner/log:/var/log/tanner
+      - $HOME/cyberpot/data/tanner/files:/opt/tanner/files
     depends_on:
-     - tanner_api
-#     - tanner_web
-     - tanner_phpox
+      - tanner_api
+      #     - tanner_web
+      - tanner_phpox
 
-# Snare Service
+  # Snare Service
   snare:
     build: ./snare
     container_name: snare
     restart: always
     stop_signal: SIGKILL
     tty: true
-#    cpu_count: 1
-#    cpus: 0.25
+    #    cpu_count: 1
+    #    cpus: 0.25
     networks:
-     - tanner_local
+      - tanner_local
     ports:
-     - "80:80"
-    image: "khulnasoft/snare:2204"
+      - "80:80"
+    image: "khulnasoft/snare:24.04"
     depends_on:
-     - tanner
+      - tanner

@@ -10,7 +10,10 @@ trap fuCLEANUP EXIT
 if [ -f "/data/cyberpot/etc/compose/elk_environment" ];
   then
     echo "Found .env, now exporting ..."
-    set -o allexport && source "/data/cyberpot/etc/compose/elk_environment" && set +o allexport
+    set -o allexport
+    source "/data/cyberpot/etc/compose/elk_environment"
+    LS_SSL_VERIFICATION="${LS_SSL_VERIFICATION:-full}"
+    set +o allexport
 fi
 
 # Check internet availability 
@@ -42,25 +45,28 @@ if [ "$myCHECK" == "0" ];
     echo "Cannot reach Listbot, starting Logstash without latest translation maps."
 fi
 
-# Distributed CyberPot installation needs a different pipeline config and autossh tunnel. 
-if [ "$MY_CYBERPOT_TYPE" == "SENSOR" ];
+# Distributed CyberPot installation needs a different pipeline config 
+if [ "$CYBERPOT_TYPE" == "SENSOR" ];
   then
     echo
-    echo "Distributed CyberPot setup, sending CyberPot logs to $MY_HIVE_IP."
+    echo "Distributed CyberPot setup, sending CyberPot logs to $CYBERPOT_HIVE_IP."
     echo
-    echo "CyberPot type: $MY_CYBERPOT_TYPE"
-    echo "Keyfile used: $MY_SENSOR_PRIVATEKEYFILE"
-    echo "Hive username: $MY_HIVE_USERNAME"
-    echo "Hive IP: $MY_HIVE_IP"
+    echo "CyberPot type: $CYBERPOT_TYPE"
+    echo "Hive IP: $CYBERPOT_HIVE_IP"
+    echo "SSL verification: $LS_SSL_VERIFICATION"
     echo
-    # Ensure correct file permissions for private keyfile or SSH will ask for password
-    chmod 600 $MY_SENSOR_PRIVATEKEYFILE
+   # Ensure correct file permissions for private keyfile or SSH will ask for password
     cp /usr/share/logstash/config/pipelines_sensor.yml /usr/share/logstash/config/pipelines.yml
-    autossh -f -M 0 -4 -l $MY_HIVE_USERNAME -i $MY_SENSOR_PRIVATEKEYFILE -p 64295 -N -L64305:127.0.0.1:64305 $MY_HIVE_IP -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null"
 fi
 
-if [ "$MY_CYBERPOT_TYPE" != "SENSOR" ];
+if [ "$CYBERPOT_TYPE" != "SENSOR" ];
   then
+    echo
+    echo "This is a CyberPot STANDARD / HIVE installation."
+    echo
+    echo "CyberPot type: $CYBERPOT_TYPE"
+    echo
+
     # Index Management is happening through ILM, but we need to put CyberPot ILM setting on ES.
     myCYBERPOTILM=$(curl -s -XGET "http://elasticsearch:9200/_ilm/policy/cyberpot" | grep "Lifecycle policy not found: cyberpot" -c)
     if [ "$myCYBERPOTILM" == "1" ];

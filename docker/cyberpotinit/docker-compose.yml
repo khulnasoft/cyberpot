@@ -1,0 +1,16 @@
+services:
+  # CyberPot Init Service
+  cyberpotinit:
+    build: .
+    container_name: cyberpotinit
+    env_file:
+      - $HOME/cyberpot/.env
+    restart: "no"
+    stop_grace_period: 60s
+    image: "khulnasoft/cyberpotinit:24.04"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - $HOME/cyberpot/data:/data
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN

@@ -1,11 +1,8 @@
-version: '2.3'
-
 networks:
   adbhoney_local:
 
 services:
-
-# Adbhoney service
+  # Adbhoney service
   adbhoney:
     build: .
     container_name: adbhoney
@@ -13,11 +10,11 @@ services:
     #    cpu_count: 1
     #    cpus: 0.25
     networks:
-     - adbhoney_local
+      - adbhoney_local
     ports:
-     - "5555:5555"
-    image: "khulnasoft/adbhoney:2204"
+      - "5555:5555"
+    image: "khulnasoft/adbhoney:24.04"
     read_only: true
     volumes:
-     - /data/adbhoney/log:/opt/adbhoney/log
-     - /data/adbhoney/downloads:/opt/adbhoney/dl
+      - $HOME/cyberpot/data/adbhoney/log:/opt/adbhoney/log
+      - $HOME/cyberpot/data/adbhoney/downloads:/opt/adbhoney/dl

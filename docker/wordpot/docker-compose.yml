@@ -1,22 +1,19 @@
-version: '2.3'
-
 networks:
   wordpot_local:
 
 services:
-
-# Wordpot service
+  # Wordpot service
   wordpot:
     build: .
     container_name: wordpot
     restart: always
-#    cpu_count: 1
-#    cpus: 0.25
+    #    cpu_count: 1
+    #    cpus: 0.25
     networks:
-     - wordpot_local
+      - wordpot_local
     ports:
-     - "80:80"
-    image: "khulnasoft/wordpot:2204"
-    #    read_only: true
-    #    volumes:
-            # - /data/wordpot/log:/opt/ddospot/ddospot/db
+      - "80:80"
+    image: "khulnasoft/wordpot:24.04"
+    read_only: true
+    volumes:
+      - $HOME/cyberpot/data/wordpot/log:/opt/wordpot/logs/

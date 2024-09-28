@@ -2,27 +2,27 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: CyberPot
+title: CyberPot 24.04.0
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
 type: software
 authors:
-  - name: Deutsche Telekom Security GmbH
+  - name: KhulnaSoft DevSecOps
     address: Bonner Talweg 100
     city: Bonn
     country: DE
-    post-code: '53113'
-    website: 'https://github.com/khulnasoft'
+    post-code: "53113"
+    website: "https://github.com/khulnasoft"
   - given-names: Marco
     family-names: Ochse
-    affiliation: Deutsche KhulnaSoft Security GmbH
+    affiliation: KhulnaSoft DevSecOps
 identifiers:
   - type: url
     value: >-
-      https://github.com/khulnasoft/cyberpot/releases/tag/22.04.0
-    description: CyberPot Release 22.04.0
-repository-code: 'https://github.com/khulnasoft/cyberpot'
+      https://github.com/khulnasoft/cyberpot/releases/tag/24.04.0
+    description: CyberPot Release 24.04.0
+repository-code: "https://github.com/khulnasoft/cyberpot"
 abstract: >-
   CyberPot is the all in one, optionally distributed, multiarch
   (amd64, arm64) honeypot plattform, supporting 20+
@@ -38,5 +38,6 @@ keywords:
   - docker
   - elk
 license: GPL-3.0
-version: 22.04.0
-date-released: '2022-04-12'
+commit: release
+version: 24.04.0
+date-released: "2024-04-22"
