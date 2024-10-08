@@ -5,7 +5,7 @@
 # Setup Vars
 myPLATFORMS="linux/amd64,linux/arm64"
 myHUBORG_DOCKER="khulnasoft"
-myHUBORG_GITHUB="ghcr.io/telekom-security"
+myHUBORG_GITHUB="ghcr.io/khulnasoft"
 myTAG="24.04"
 #myIMAGESBASE="cyberpotinit adbhoney ciscoasa citrixhoneypot conpot cowrie ddospot dicompot dionaea elasticpot endlessh ewsposter fatt glutton hellpot heralding honeypots honeytrap ipphoney log4pot mailoney medpot nginx p0f redishoneypot sentrypeer spiderfoot suricata wordpot"
 myIMAGESBASE="cyberpotinit adbhoney ciscoasa citrixhoneypot conpot cowrie ddospot dicompot dionaea elasticpot endlessh ewsposter fatt hellpot heralding honeypots honeytrap ipphoney log4pot mailoney medpot nginx p0f redishoneypot sentrypeer spiderfoot suricata wordpot"

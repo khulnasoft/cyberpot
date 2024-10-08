@@ -1,11 +1,10 @@
-version: '2.3'
+version: "2.3"
 
 networks:
   glastopf_local:
 
 services:
-
-# Glastopf service
+  # Glastopf service
   glastopf:
     build: .
     container_name: glastopf
@@ -13,11 +12,11 @@ services:
       - /tmp/glastopf:uid=2000,gid=2000
     restart: always
     networks:
-     - glastopf_local
+      - glastopf_local
     ports:
-     - "8081:80"
-    image: "ghcr.io/telekom-security/glastopf:1903"
+      - "8081:80"
+    image: "ghcr.io/khulnasoft/glastopf:1903"
     read_only: true
     volumes:
-     - /data/glastopf/db:/tmp/glastopf/db
-     - /data/glastopf/log:/tmp/glastopf/log
+      - /data/glastopf/db:/tmp/glastopf/db
+      - /data/glastopf/log:/tmp/glastopf/log

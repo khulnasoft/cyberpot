@@ -1,4 +1,4 @@
-[![](https://images.microbadger.com/badges/version/ghcr.io/telekom-security/elasticpot:1903.svg)](https://microbadger.com/images/ghcr.io/telekom-security/elasticpot:1903 "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/ghcr.io/telekom-security/elasticpot:1903.svg)](https://microbadger.com/images/ghcr.io/telekom-security/elasticpot:1903 "Get your own image badge on microbadger.com")
+[![](https://images.microbadger.com/badges/version/ghcr.io/khulnasoft/elasticpot:1903.svg)](https://microbadger.com/images/ghcr.io/khulnasoft/elasticpot:1903 "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/ghcr.io/khulnasoft/elasticpot:1903.svg)](https://microbadger.com/images/ghcr.io/khulnasoft/elasticpot:1903 "Get your own image badge on microbadger.com")
 
 # elasticpot
 
