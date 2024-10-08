@@ -4,7 +4,7 @@
 
 [elasticpot](https://github.com/schmalle/ElasticPot) is a simple elastic search honeypot.
 
-This dockerized version is part of the **[CyberPot community honeypot](http://telekom-security.github.io/)** of Deutsche Telekom AG.
+This dockerized version is part of the **[CyberPot community honeypot](http://khulnasoft.github.io/)** of Deutsche Telekom AG.
 
 The `Dockerfile` contains the blueprint for the dockerized elasticpot and will be used to setup the docker image.
 
