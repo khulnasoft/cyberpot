@@ -33,9 +33,4 @@ CyberPot 24.04.0 marks probably the largest change in the history of the project
 - Most of the support scripts were moved into the **CyberPot Init** image and are no longer available directly on the host.
 - Cockpit is no longer available as part of CyberPot itself. However, where supported, you can simply install the `cockpit` package.
 
-# Thanks & Credits
-
-- @sp3t3rs, @trixam, for their backend and ews support!
-- @shark4ce for taking the time to test, debug and offer a solution #1472.
-
 ... and many others from the CyberPot community by opening valued issues and discussions, suggesting ideas and thus helping to improve CyberPot!
