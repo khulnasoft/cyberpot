@@ -1,4 +1,4 @@
-FROM node:10.24.1-alpine3.11 as builder
+FROM node:10.24.1-alpine3.11 AS builder
 #
 # Install CyberChef 
 RUN apk -U --no-cache add git
