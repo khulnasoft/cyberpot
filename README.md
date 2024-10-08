@@ -777,7 +777,7 @@ Some CyberPot updates will require you to update the Kibana objects. Either to s
 
 ### Import
 
-1. [Download the NDJSON file](https://github.com/dtag-dev-sec/cyberpot/blob/master/docker/cyberpotinit/dist/etc/objects/kibana_export.ndjson.zip) and unzip it.
+1. [Download the NDJSON file](https://github.com/khulnasoft/cyberpot/blob/master/docker/cyberpotinit/dist/etc/objects/kibana_export.ndjson.zip) and unzip it.
 2. Go to Kibana
 3. Click on "Stack Management"
 4. Click on "Saved Objects"
