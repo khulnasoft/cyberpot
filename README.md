@@ -586,7 +586,7 @@ On the CyberPot Landing Page just click on `Cyberchef` and you will be forwarded
 
 ## Elasticvue
 
-On the CyberPot Landing Page just click on `Elastivue` and you will be forwarded to Elastivue.
+On the CyberPot Landing Page just click on `Elasticvue` and you will be forwarded to Elasticvue.
 
 ![Elasticvue](doc/elasticvue.png)
 <br><br>
