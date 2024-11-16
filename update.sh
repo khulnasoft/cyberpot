@@ -8,13 +8,13 @@ myGREEN="[0;32m"
 myWHITE="[0;0m"
 myBLUE="[0;34m"
 
-myUPDATER=$(cat << "EOF"
+myINSTALLER=$(cat << "EOF"
    ______      __              ____        __ 
   / ____/_  __/ /_  ___  _____/ __ \____  / /_
  / /   / / / / __ \/ _ \/ ___/ /_/ / __ \/ __/
 / /___/ /_/ / /_/ /  __/ /  / ____/ /_/ / /_  
 \____/\__, /_.___/\___/_/  /_/    \____/\__/  
-     /____/                 
+     /____/                                   
 EOF
 )
 
@@ -61,7 +61,7 @@ function fuSELFUPDATE () {
 	    return
 	fi
 	### DEV
-	myRESULT=$(git diff --name-only origin/master | grep "^update.sh")
+	myRESULT=$(git diff --name-only origin/24.04.1 | grep "^update.sh")
 	if [ "$myRESULT" == "update.sh" ];
 	  then
 	    echo "###### $myBLUE""Found newer version, will be pulling updates and restart myself.""$myWHITE"
@@ -79,7 +79,7 @@ function fuSELFUPDATE () {
 
 function fuCHECK_VERSION () {
 	local myMINVERSION="24.04.0"
-	local myMASTERVERSION="24.04.0"
+	local myMASTERVERSION="24.04.1"
 	echo
 	echo "### Checking for version tag ..."
 	if [ -f "version" ];

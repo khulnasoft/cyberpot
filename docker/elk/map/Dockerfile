@@ -1,7 +1,7 @@
 FROM alpine:3.19
 #
 # Install packages
-RUN apk -U --no-cache add \
+RUN apk --no-cache -U add \
 		build-base \
 		git \
 		libcap \
@@ -13,7 +13,7 @@ RUN apk -U --no-cache add \
 # Install from GitHub and setup
     mkdir -p /opt && \
     cd /opt/ && \
-    git clone https://github.com/khulnasoft-lab/cyberpot-attack-map -b 2.2.2 && \
+    git clone https://github.com/khulnasoft-lab/cyberpot-attack-map -b 2.2.6 && \
     cd cyberpot-attack-map && \
     pip3 install --break-system-packages --upgrade pip && \
     pip3 install --break-system-packages -r requirements.txt && \
@@ -35,4 +35,4 @@ ENV TZ=UTC
 STOPSIGNAL SIGINT
 USER map:map
 WORKDIR /opt/cyberpot-attack-map
-CMD /usr/bin/python3 $MAP_COMMAND
+CMD ["/bin/sh", "-c", "/usr/bin/python3 $MAP_COMMAND"]

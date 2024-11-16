@@ -88,7 +88,7 @@
 
     - name: Remove systemd service file for cyberpot
       ansible.builtin.file:
-        path: "/etc/systemd/system/cyberpot.service"
+        path: '/etc/systemd/system/cyberpot.service'
         state: absent
       notify: Reload systemd
       when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
@@ -139,8 +139,8 @@
     - name: Revert DNSStubListener setting in resolved.conf (Fedora, Ubuntu)
       lineinfile:
         path: /etc/systemd/resolved.conf
-        regexp: "DNSStubListener=no"
-        line: "DNSStubListener=yes"
+        regexp: 'DNSStubListener=no'
+        line: 'DNSStubListener=yes'
         state: present
       when: ansible_distribution in ["Fedora", "Ubuntu"]
       tags:
@@ -150,8 +150,8 @@
     - name: Revert SELinux config to enforcing (AlmaLinux, Fedora, Rocky)
       lineinfile:
         path: /etc/selinux/config
-        regexp: "^SELINUX="
-        line: "SELINUX=enforcing"
+        regexp: '^SELINUX='
+        line: 'SELINUX=enforcing'
       when: ansible_distribution in ["AlmaLinux", "Fedora", "Rocky"]
       tags:
         - "AlmaLinux"

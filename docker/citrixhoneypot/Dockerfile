@@ -13,7 +13,7 @@ RUN apk --no-cache -U add \
 # Install CitrixHoneypot from GitHub
     git clone https://github.com/Cyb3rhq/CitrixHoneypot /opt/citrixhoneypot && \
     cd /opt/citrixhoneypot && \
-    git checkout master && \
+    git checkout f59ad7320dc5bbb8c23c8baa5f111b52c52fbef3 && \
 #
 # Setup user, groups and configs
     mkdir -p /opt/citrixhoneypot/logs /opt/citrixhoneypot/ssl && \
@@ -33,9 +33,9 @@ RUN apk --no-cache -U add \
 # Clean up
     apk del --purge git \
                     openssl && \
-    rm -rf /root/* && \
-    rm -rf /opt/citrixhoneypot/.git && \
-    rm -rf /var/cache/apk/*
+    rm -rf /root/* \
+           /opt/citrixhoneypot/.git \
+           /var/cache/apk/*
 #
 # Set workdir and start citrixhoneypot
 STOPSIGNAL SIGINT

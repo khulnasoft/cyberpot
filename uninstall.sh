@@ -5,13 +5,13 @@ myUSER=$(whoami)
 myCYBERPOT_CONF_FILE="/home/${myUSER}/cyberpot/.env"
 myANSIBLE_CYBERPOT_PLAYBOOK="installer/remove/cyberpot.yml"
 
-myUNINSTALLER=$(cat << "EOF"
+myINSTALLER=$(cat << "EOF"
    ______      __              ____        __ 
   / ____/_  __/ /_  ___  _____/ __ \____  / /_
  / /   / / / / __ \/ _ \/ ___/ /_/ / __ \/ __/
 / /___/ /_/ / /_/ /  __/ /  / ____/ /_/ / /_  
 \____/\__, /_.___/\___/_/  /_/    \____/\__/  
-     /____/                 
+     /____/                                   
 EOF
 )
 

@@ -1,7 +1,8 @@
-version: "2.3"
+version: '2.3'
 
 services:
-  ## Elasticsearch-head service
+
+## Elasticsearch-head service
   head:
     build: .
     container_name: head
@@ -10,6 +11,6 @@ services:
     #      elasticsearch:
     #        condition: service_healthy
     ports:
-      - "127.0.0.1:64302:9100"
+     - "127.0.0.1:64302:9100"
     image: "khulnasoft/head:24.04"
     read_only: true

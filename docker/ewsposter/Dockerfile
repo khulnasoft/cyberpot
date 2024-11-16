@@ -4,7 +4,7 @@ FROM alpine:3.19
 COPY dist/ /root/dist/
 #
 # Install packages
-RUN apk -U --no-cache add \
+RUN apk --no-cache -U add \
 		build-base \
 		git \
 		libffi-dev \
@@ -24,10 +24,9 @@ RUN apk -U --no-cache add \
 		py3-wheel && \
 	pip3 install --break-system-packages --upgrade pip && \
 	pip3 install --break-system-packages --no-cache-dir configparser hpfeeds3 influxdb influxdb-client xmljson && \
-
 #
 # Setup ewsposter
-    git clone https://github.com/Cyb3rhq/ewsposter -b master /opt/ewsposter && \
+    git clone https://github.com/khulnasoft/ewsposter -b v1.25.0 /opt/ewsposter && \
     mkdir -p /opt/ewsposter/spool /opt/ewsposter/log && \
 #
 # Setup user and groups
@@ -46,7 +45,7 @@ RUN apk -U --no-cache add \
 		openssl-dev \
 		python3-dev \
 		py-setuptools && \
-    rm -rf /root/* /var/cache/apk/* /opt/ewsposter/.git
+	rm -rf /root/* /var/cache/apk/* /opt/ewsposter/.git
 #
 # Run ewsposter
 STOPSIGNAL SIGINT

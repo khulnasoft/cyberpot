@@ -4,6 +4,7 @@
 
 networks:
   adbhoney_local:
+  beelzebub_local:
   ciscoasa_local:
   citrixhoneypot_local:
   conpot_local_IEC104:
@@ -16,13 +17,18 @@ networks:
   dionaea_local:
   elasticpot_local:
   endlessh_local:
+  galah_local:
+  go-pot_local:
+  h0neytr4p_local:
   hellpot_local:
   heralding_local:
+  honeyaml_local:
   honeypots_local:
   ipphoney_local:
   log4pot_local:
   mailoney_local:
   medpot_local:
+  miniprint_local:
   redishoneypot_local:
   sentrypeer_local:
   tanner_local:
@@ -31,13 +37,14 @@ networks:
   ewsposter_local:
 
 services:
-  #########################################
-  #### DEV
-  #########################################
-  #### CyberPot Init - Never delete this!
-  #########################################
 
-  # CyberPot Init Service
+#########################################
+#### DEV
+#########################################
+#### CyberPot Init - Never delete this!
+#########################################
+
+# CyberPot Init Service
   cyberpotinit:
     container_name: cyberpotinit
     env_file:
@@ -49,7 +56,7 @@ services:
       - /tmp/:uid=2000,gid=2000
     network_mode: "host"
     cap_add:
-      - NET_ADMIN
+     - NET_ADMIN
     image: ${CYBERPOT_REPO}/cyberpotinit:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     volumes:
@@ -58,11 +65,11 @@ services:
       - ${CYBERPOT_DATA_PATH}:/data
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
-  ##################
-  #### Honeypots
-  ##################
+##################
+#### Honeypots
+##################
 
-  # Adbhoney service
+# Adbhoney service
   adbhoney:
     container_name: adbhoney
     restart: always
@@ -70,17 +77,45 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - adbhoney_local
+     - adbhoney_local
     ports:
-      - "5555:5555"
+     - "5555:5555"
     image: ${CYBERPOT_REPO}/adbhoney:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/adbhoney/log:/opt/adbhoney/log
-      - ${CYBERPOT_DATA_PATH}/adbhoney/downloads:/opt/adbhoney/dl
+     - ${CYBERPOT_DATA_PATH}/adbhoney/log:/opt/adbhoney/log
+     - ${CYBERPOT_DATA_PATH}/adbhoney/downloads:/opt/adbhoney/dl
 
-  # Ciscoasa service
+# Beelzebub service
+  beelzebub:
+    container_name: beelzebub
+    restart: always
+    depends_on:
+      cyberpotinit:
+        condition: service_healthy
+#    cpu_count: 1
+#    cpus: 0.25
+    networks:
+     - beelzebub_local
+    ports:
+      - "22:22"
+    #  - "80:80"
+    #  - "2222:2222"
+    #  - "3306:3306"
+    #  - "8080:8080"
+    image: ${CYBERPOT_REPO}/beelzebub:${CYBERPOT_VERSION}
+    pull_policy: ${CYBERPOT_PULL_POLICY}
+    environment:
+      LLM_MODEL: ${BEELZEBUB_LLM_MODEL}
+      LLM_HOST: ${BEELZEBUB_LLM_HOST}
+      OLLAMA_MODEL: ${BEELZEBUB_OLLAMA_MODEL}
+    read_only: true
+    volumes:
+     - ${CYBERPOT_DATA_PATH}/beelzebub/key:/opt/beelzebub/configurations/key
+     - ${CYBERPOT_DATA_PATH}/beelzebub/log:/opt/beelzebub/configurations/log
+
+# Ciscoasa service
   ciscoasa:
     container_name: ciscoasa
     restart: always
@@ -88,19 +123,19 @@ services:
       cyberpotinit:
         condition: service_healthy
     tmpfs:
-      - /tmp/ciscoasa:uid=2000,gid=2000
+     - /tmp/ciscoasa:uid=2000,gid=2000
     networks:
-      - ciscoasa_local
+     - ciscoasa_local
     ports:
-      - "5000:5000/udp"
-      - "8443:8443"
+     - "5000:5000/udp"
+     - "8443:8443"
     image: ${CYBERPOT_REPO}/ciscoasa:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/ciscoasa/log:/var/log/ciscoasa
+     - ${CYBERPOT_DATA_PATH}/ciscoasa/log:/var/log/ciscoasa
 
-  # CitrixHoneypot service
+# CitrixHoneypot service
   citrixhoneypot:
     container_name: citrixhoneypot
     restart: always
@@ -108,16 +143,16 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - citrixhoneypot_local
+     - citrixhoneypot_local
     ports:
-      - "443:443"
+     - "443:443"
     image: ${CYBERPOT_REPO}/citrixhoneypot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/citrixhoneypot/log:/opt/citrixhoneypot/logs
+     - ${CYBERPOT_DATA_PATH}/citrixhoneypot/log:/opt/citrixhoneypot/logs
 
-  # Conpot IEC104 service
+# Conpot IEC104 service
   conpot_IEC104:
     container_name: conpot_iec104
     restart: always
@@ -125,25 +160,25 @@ services:
       cyberpotinit:
         condition: service_healthy
     environment:
-      - CONPOT_CONFIG=/etc/conpot/conpot.cfg
-      - CONPOT_JSON_LOG=/var/log/conpot/conpot_IEC104.json
-      - CONPOT_LOG=/var/log/conpot/conpot_IEC104.log
-      - CONPOT_TEMPLATE=IEC104
-      - CONPOT_TMP=/tmp/conpot
+     - CONPOT_CONFIG=/etc/conpot/conpot.cfg
+     - CONPOT_JSON_LOG=/var/log/conpot/conpot_IEC104.json
+     - CONPOT_LOG=/var/log/conpot/conpot_IEC104.log
+     - CONPOT_TEMPLATE=IEC104
+     - CONPOT_TMP=/tmp/conpot
     tmpfs:
-      - /tmp/conpot:uid=2000,gid=2000
+     - /tmp/conpot:uid=2000,gid=2000
     networks:
-      - conpot_local_IEC104
+     - conpot_local_IEC104
     ports:
-      - "161:161/udp"
-      - "2404:2404"
+     - "161:161/udp"
+     - "2404:2404"
     image: ${CYBERPOT_REPO}/conpot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/conpot/log:/var/log/conpot
+     - ${CYBERPOT_DATA_PATH}/conpot/log:/var/log/conpot
 
-  # Conpot guardian_ast service
+# Conpot guardian_ast service
   conpot_guardian_ast:
     container_name: conpot_guardian_ast
     restart: always
@@ -151,24 +186,24 @@ services:
       cyberpotinit:
         condition: service_healthy
     environment:
-      - CONPOT_CONFIG=/etc/conpot/conpot.cfg
-      - CONPOT_JSON_LOG=/var/log/conpot/conpot_guardian_ast.json
-      - CONPOT_LOG=/var/log/conpot/conpot_guardian_ast.log
-      - CONPOT_TEMPLATE=guardian_ast
-      - CONPOT_TMP=/tmp/conpot
+     - CONPOT_CONFIG=/etc/conpot/conpot.cfg
+     - CONPOT_JSON_LOG=/var/log/conpot/conpot_guardian_ast.json
+     - CONPOT_LOG=/var/log/conpot/conpot_guardian_ast.log
+     - CONPOT_TEMPLATE=guardian_ast
+     - CONPOT_TMP=/tmp/conpot
     tmpfs:
-      - /tmp/conpot:uid=2000,gid=2000
+     - /tmp/conpot:uid=2000,gid=2000
     networks:
-      - conpot_local_guardian_ast
+     - conpot_local_guardian_ast
     ports:
-      - "10001:10001"
+     - "10001:10001"
     image: ${CYBERPOT_REPO}/conpot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/conpot/log:/var/log/conpot
+     - ${CYBERPOT_DATA_PATH}/conpot/log:/var/log/conpot
 
-  # Conpot ipmi
+# Conpot ipmi
   conpot_ipmi:
     container_name: conpot_ipmi
     restart: always
@@ -176,24 +211,24 @@ services:
       cyberpotinit:
         condition: service_healthy
     environment:
-      - CONPOT_CONFIG=/etc/conpot/conpot.cfg
-      - CONPOT_JSON_LOG=/var/log/conpot/conpot_ipmi.json
-      - CONPOT_LOG=/var/log/conpot/conpot_ipmi.log
-      - CONPOT_TEMPLATE=ipmi
-      - CONPOT_TMP=/tmp/conpot
+     - CONPOT_CONFIG=/etc/conpot/conpot.cfg
+     - CONPOT_JSON_LOG=/var/log/conpot/conpot_ipmi.json
+     - CONPOT_LOG=/var/log/conpot/conpot_ipmi.log
+     - CONPOT_TEMPLATE=ipmi
+     - CONPOT_TMP=/tmp/conpot
     tmpfs:
-      - /tmp/conpot:uid=2000,gid=2000
+     - /tmp/conpot:uid=2000,gid=2000
     networks:
-      - conpot_local_ipmi
+     - conpot_local_ipmi
     ports:
-      - "623:623/udp"
+     - "623:623/udp"
     image: ${CYBERPOT_REPO}/conpot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/conpot/log:/var/log/conpot
+     - ${CYBERPOT_DATA_PATH}/conpot/log:/var/log/conpot
 
-  # Conpot kamstrup_382
+# Conpot kamstrup_382
   conpot_kamstrup_382:
     container_name: conpot_kamstrup_382
     restart: always
@@ -201,25 +236,25 @@ services:
       cyberpotinit:
         condition: service_healthy
     environment:
-      - CONPOT_CONFIG=/etc/conpot/conpot.cfg
-      - CONPOT_JSON_LOG=/var/log/conpot/conpot_kamstrup_382.json
-      - CONPOT_LOG=/var/log/conpot/conpot_kamstrup_382.log
-      - CONPOT_TEMPLATE=kamstrup_382
-      - CONPOT_TMP=/tmp/conpot
+     - CONPOT_CONFIG=/etc/conpot/conpot.cfg
+     - CONPOT_JSON_LOG=/var/log/conpot/conpot_kamstrup_382.json
+     - CONPOT_LOG=/var/log/conpot/conpot_kamstrup_382.log
+     - CONPOT_TEMPLATE=kamstrup_382
+     - CONPOT_TMP=/tmp/conpot
     tmpfs:
-      - /tmp/conpot:uid=2000,gid=2000
+     - /tmp/conpot:uid=2000,gid=2000
     networks:
-      - conpot_local_kamstrup_382
+     - conpot_local_kamstrup_382
     ports:
-      - "1025:1025"
-      - "50100:50100"
+     - "1025:1025"
+     - "50100:50100"
     image: ${CYBERPOT_REPO}/conpot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/conpot/log:/var/log/conpot
+     - ${CYBERPOT_DATA_PATH}/conpot/log:/var/log/conpot
 
-  # Cowrie service
+# Cowrie service
   cowrie:
     container_name: cowrie
     restart: always
@@ -243,7 +278,7 @@ services:
       - ${CYBERPOT_DATA_PATH}/cowrie/log:/home/cowrie/cowrie/log
       - ${CYBERPOT_DATA_PATH}/cowrie/log/tty:/home/cowrie/cowrie/log/tty
 
-  # Ddospot service
+# Ddospot service
   ddospot:
     container_name: ddospot
     restart: always
@@ -251,25 +286,25 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - ddospot_local
+     - ddospot_local
     ports:
-      - "19:19/udp"
-      - "53:53/udp"
-      - "123:123/udp"
-      #     - "161:161/udp"
-      - "1900:1900/udp"
+     - "19:19/udp"
+     - "53:53/udp"
+     - "123:123/udp"
+#     - "161:161/udp"
+     - "1900:1900/udp"
     image: ${CYBERPOT_REPO}/ddospot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/ddospot/log:/opt/ddospot/ddospot/logs
-      - ${CYBERPOT_DATA_PATH}/ddospot/bl:/opt/ddospot/ddospot/bl
-      - ${CYBERPOT_DATA_PATH}/ddospot/db:/opt/ddospot/ddospot/db
+     - ${CYBERPOT_DATA_PATH}/ddospot/log:/opt/ddospot/ddospot/logs
+     - ${CYBERPOT_DATA_PATH}/ddospot/bl:/opt/ddospot/ddospot/bl
+     - ${CYBERPOT_DATA_PATH}/ddospot/db:/opt/ddospot/ddospot/db
 
-  # Dicompot service
-  # Get the Horos Client for testing: https://horosproject.org/
-  # Get Dicom images (CC BY 3.0): https://www.cancerimagingarchive.net/collections/
-  # Put images (which must be in Dicom DCM format or it will not work!) into /data/dicompot/images
+# Dicompot service
+# Get the Horos Client for testing: https://horosproject.org/
+# Get Dicom images (CC BY 3.0): https://www.cancerimagingarchive.net/collections/
+# Put images (which must be in Dicom DCM format or it will not work!) into /data/dicompot/images
   dicompot:
     container_name: dicompot
     restart: always
@@ -277,17 +312,17 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - dicompot_local
+     - dicompot_local
     ports:
-      - "11112:11112"
+     - "11112:11112"
     image: ${CYBERPOT_REPO}/dicompot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/dicompot/log:/var/log/dicompot
-  #     - ${CYBERPOT_DATA_PATH}/dicompot/images:/opt/dicompot/images
+     - ${CYBERPOT_DATA_PATH}/dicompot/log:/var/log/dicompot
+#     - ${CYBERPOT_DATA_PATH}/dicompot/images:/opt/dicompot/images
 
-  # Dionaea service
+# Dionaea service
   dionaea:
     container_name: dionaea
     stdin_open: true
@@ -297,38 +332,38 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - dionaea_local
+     - dionaea_local
     ports:
-      - "20:20"
-      - "21:21"
-      - "42:42"
-      - "69:69/udp"
-      - "81:81"
-      - "135:135"
-      # - "443:443"
-      - "445:445"
-      - "1433:1433"
-      - "1723:1723"
-      - "1883:1883"
-      - "3306:3306"
-      # - "5060:5060"
-      # - "5060:5060/udp"
-      # - "5061:5061"
-      - "27017:27017"
+     - "20:20"
+     - "21:21"
+     - "42:42"
+     - "69:69/udp"
+     - "81:81"
+     - "135:135"
+     # - "443:443"
+     - "445:445"
+     - "1433:1433"
+     - "1723:1723"
+     - "1883:1883"
+     - "3306:3306"
+     # - "5060:5060"
+     # - "5060:5060/udp"
+     # - "5061:5061"
+     - "27017:27017"
     image: ${CYBERPOT_REPO}/dionaea:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/dionaea/roots/ftp:/opt/dionaea/var/dionaea/roots/ftp
-      - ${CYBERPOT_DATA_PATH}/dionaea/roots/tftp:/opt/dionaea/var/dionaea/roots/tftp
-      - ${CYBERPOT_DATA_PATH}/dionaea/roots/www:/opt/dionaea/var/dionaea/roots/www
-      - ${CYBERPOT_DATA_PATH}/dionaea/roots/upnp:/opt/dionaea/var/dionaea/roots/upnp
-      - ${CYBERPOT_DATA_PATH}/dionaea:/opt/dionaea/var/dionaea
-      - ${CYBERPOT_DATA_PATH}/dionaea/binaries:/opt/dionaea/var/dionaea/binaries
-      - ${CYBERPOT_DATA_PATH}/dionaea/log:/opt/dionaea/var/log
-      - ${CYBERPOT_DATA_PATH}/dionaea/rtp:/opt/dionaea/var/dionaea/rtp
+     - ${CYBERPOT_DATA_PATH}/dionaea/roots/ftp:/opt/dionaea/var/dionaea/roots/ftp
+     - ${CYBERPOT_DATA_PATH}/dionaea/roots/tftp:/opt/dionaea/var/dionaea/roots/tftp
+     - ${CYBERPOT_DATA_PATH}/dionaea/roots/www:/opt/dionaea/var/dionaea/roots/www
+     - ${CYBERPOT_DATA_PATH}/dionaea/roots/upnp:/opt/dionaea/var/dionaea/roots/upnp
+     - ${CYBERPOT_DATA_PATH}/dionaea:/opt/dionaea/var/dionaea
+     - ${CYBERPOT_DATA_PATH}/dionaea/binaries:/opt/dionaea/var/dionaea/binaries
+     - ${CYBERPOT_DATA_PATH}/dionaea/log:/opt/dionaea/var/log
+     - ${CYBERPOT_DATA_PATH}/dionaea/rtp:/opt/dionaea/var/dionaea/rtp
 
-  # ElasticPot service
+# ElasticPot service
   elasticpot:
     container_name: elasticpot
     restart: always
@@ -336,16 +371,16 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - elasticpot_local
+     - elasticpot_local
     ports:
-      - "9200:9200"
+     - "9200:9200"
     image: ${CYBERPOT_REPO}/elasticpot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/elasticpot/log:/opt/elasticpot/log
+     - ${CYBERPOT_DATA_PATH}/elasticpot/log:/opt/elasticpot/log
 
-  # Endlessh service
+# Endlessh service
   endlessh:
     container_name: endlessh
     restart: always
@@ -353,36 +388,104 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - endlessh_local
+     - endlessh_local
     ports:
-      - "22:2222"
+     - "22:2222"
     image: ${CYBERPOT_REPO}/endlessh:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/endlessh/log:/var/log/endlessh
+     - ${CYBERPOT_DATA_PATH}/endlessh/log:/var/log/endlessh
 
-  # # Glutton service
+# Galah service
+  galah:
+    container_name: galah
+    restart: always
+    depends_on:
+      cyberpotinit:
+        condition: service_healthy
+#    cpu_count: 1
+#    cpus: 0.25
+    networks:
+     - galah_local
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8443:8443"
+      - "8080:8080"
+    image: ${CYBERPOT_REPO}/galah:${CYBERPOT_VERSION}
+    pull_policy: ${CYBERPOT_PULL_POLICY}
+    environment:
+      LLM_PROVIDER: ${GALAH_LLM_PROVIDER}
+      LLM_SERVER_URL: ${GALAH_LLM_SERVER_URL}
+      LLM_MODEL: ${GALAH_LLM_MODEL}
+      # LLM_TEMPERATURE: ${GALAH_LLM_TEMPERATURE}
+      # LLM_API_KEY: ${GALAH_LLM_API_KEY}
+      # LLM_CLOUD_LOCATION: ${GALAH_LLM_CLOUD_LOCATION}
+      # LLM_CLOUD_PROJECT: ${GALAH_LLM_CLOUD_PROJECT}
+    read_only: true
+    volumes:
+     - ${CYBERPOT_DATA_PATH}/galah/cache:/opt/galah/config/cache
+     - ${CYBERPOT_DATA_PATH}/galah/cert:/opt/galah/config/cert
+     - ${CYBERPOT_DATA_PATH}/galah/log:/opt/galah/log
+
+# # Glutton service
   # glutton:
-  # container_name: glutton
-  # restart: always
-  # depends_on:
-  # cyberpotinit:
-  # condition: service_healthy
-  # tmpfs:
-  # - /var/lib/glutton:uid=2000,gid=2000
-  # - /run:uid=2000,gid=2000
-  # network_mode: "host"
-  # cap_add:
-  # - NET_ADMIN
-  # image: ${CYBERPOT_REPO}/glutton:${CYBERPOT_VERSION}
-  # pull_policy: ${CYBERPOT_PULL_POLICY}
-  # read_only: true
-  # volumes:
-  # - ${CYBERPOT_DATA_PATH}/glutton/log:/var/log/glutton
-  # - ${CYBERPOT_DATA_PATH}/glutton/payloads:/opt/glutton/payloads
+    # container_name: glutton
+    # restart: always
+    # depends_on:
+      # cyberpotinit:
+        # condition: service_healthy
+    # tmpfs:
+     # - /var/lib/glutton:uid=2000,gid=2000
+     # - /run:uid=2000,gid=2000
+    # network_mode: "host"
+    # cap_add:
+     # - NET_ADMIN
+    # image: ${CYBERPOT_REPO}/glutton:${CYBERPOT_VERSION}
+    # pull_policy: ${CYBERPOT_PULL_POLICY}
+    # read_only: true
+    # volumes:
+     # - ${CYBERPOT_DATA_PATH}/glutton/log:/var/log/glutton
+     # - ${CYBERPOT_DATA_PATH}/glutton/payloads:/opt/glutton/payloads
 
-  # Hellpot service
+# Go-pot service
+  go-pot:
+    container_name: go-pot
+    restart: always
+    depends_on:
+      cyberpotinit:
+        condition: service_healthy
+    networks:
+     - go-pot_local
+    ports:
+      - "8080:8080"
+    image: ${CYBERPOT_REPO}/go-pot:${CYBERPOT_VERSION}
+    pull_policy: ${CYBERPOT_PULL_POLICY}
+    read_only: true
+    volumes:
+     - ${CYBERPOT_DATA_PATH}/go-pot/log:/opt/go-pot/log/
+
+# H0neytr4p service
+  h0neytr4p:
+    container_name: h0neytr4p
+    restart: always
+    depends_on:
+      cyberpotinit:
+        condition: service_healthy
+    networks:
+     - h0neytr4p_local
+    ports:
+      - "443:443"
+    # - "80:80"
+    image: ${CYBERPOT_REPO}/h0neytr4p:${CYBERPOT_VERSION}
+    pull_policy: ${CYBERPOT_PULL_POLICY}
+    read_only: true
+    volumes:
+      - ${CYBERPOT_DATA_PATH}/h0neytr4p/log/:/opt/h0neytr4p/log/
+      - ${CYBERPOT_DATA_PATH}/h0neytr4p/payloads/:/data/h0neytr4p/payloads/
+
+# Hellpot service
   hellpot:
     container_name: hellpot
     restart: always
@@ -390,16 +493,16 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - hellpot_local
+     - hellpot_local
     ports:
-      - "80:8080"
+     - "80:8080"
     image: ${CYBERPOT_REPO}/hellpot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/hellpot/log:/var/log/hellpot
+     - ${CYBERPOT_DATA_PATH}/hellpot/log:/var/log/hellpot
 
-  # Heralding service
+# Heralding service
   heralding:
     container_name: heralding
     restart: always
@@ -407,33 +510,50 @@ services:
       cyberpotinit:
         condition: service_healthy
     tmpfs:
-      - /tmp/heralding:uid=2000,gid=2000
+     - /tmp/heralding:uid=2000,gid=2000
     networks:
-      - heralding_local
+     - heralding_local
     ports:
-      # - "21:21"
-      # - "22:22"
-      # - "23:23"
-      # - "25:25"
-      # - "80:80"
-      - "110:110"
-      - "143:143"
-      # - "443:443"
-      - "465:465"
-      - "993:993"
-      - "995:995"
-      # - "3306:3306"
-      # - "3389:3389"
-      - "1080:1080"
-      - "5432:5432"
-      - "5900:5900"
+    # - "21:21"
+    # - "22:22"
+    # - "23:23"
+    # - "25:25"
+    # - "80:80"
+     - "110:110"
+     - "143:143"
+    # - "443:443"
+     - "465:465"
+     - "993:993"
+     - "995:995"
+    # - "3306:3306"
+    # - "3389:3389"
+     - "1080:1080"
+     - "5432:5432"
+     - "5900:5900"
     image: ${CYBERPOT_REPO}/heralding:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/heralding/log:/var/log/heralding
+     - ${CYBERPOT_DATA_PATH}/heralding/log:/var/log/heralding
 
-  # Honeypots service
+# Honeyaml service
+  honeyaml:
+    container_name: honeyaml
+    restart: always
+    depends_on:
+      cyberpotinit:
+        condition: service_healthy
+    networks:
+     - honeyaml_local
+    ports:
+      - "8080:8080"
+    image: ${CYBERPOT_REPO}/honeyaml:${CYBERPOT_VERSION}
+    pull_policy: ${CYBERPOT_PULL_POLICY}
+    read_only: true
+    volumes:
+     - ${CYBERPOT_DATA_PATH}/honeyaml/log:/opt/honeyaml/log/
+
+# Honeypots service
   honeypots:
     container_name: honeypots
     stdin_open: true
@@ -443,45 +563,45 @@ services:
       cyberpotinit:
         condition: service_healthy
     tmpfs:
-      - /tmp:uid=2000,gid=2000
+     - /tmp:uid=2000,gid=2000
     networks:
-      - honeypots_local
+     - honeypots_local
     ports:
-      - "21:21"
-      - "22:22"
-      - "23:23"
-      - "25:25"
-      - "53:53/udp"
-      - "80:80"
-      - "110:110"
-      - "123:123"
-      - "143:143"
-      - "161:161"
-      - "389:389"
-      - "443:443"
-      - "445:445"
-      - "631:631"
-      - "1080:1080"
-      - "1433:1433"
-      - "1521:1521"
-      - "3306:3306"
-      - "3389:3389"
-      - "5060:5060"
-      - "5432:5432"
-      - "5900:5900"
-      - "6379:6379"
-      - "6667:6667"
-      - "8080:8080"
-      - "9100:9100"
-      - "9200:9200"
-      - "11211:11211"
+     - "21:21"
+     - "22:22"
+     - "23:23"
+     - "25:25"
+     - "53:53/udp"
+     - "80:80"
+     - "110:110"
+     - "123:123"
+     - "143:143"
+     - "161:161"
+     - "389:389"
+     - "443:443"
+     - "445:445"
+     - "631:631"
+     - "1080:1080"
+     - "1433:1433"
+     - "1521:1521"
+     - "3306:3306"
+     - "3389:3389"
+     - "5060:5060"
+     - "5432:5432"
+     - "5900:5900"
+     - "6379:6379"
+     - "6667:6667"
+     - "8080:8080"
+     - "9100:9100"
+     - "9200:9200"
+     - "11211:11211"
     image: ${CYBERPOT_REPO}/honeypots:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/honeypots/log:/var/log/honeypots
+     - ${CYBERPOT_DATA_PATH}/honeypots/log:/var/log/honeypots
 
-  # Honeytrap service
+# Honeytrap service
   honeytrap:
     container_name: honeytrap
     restart: always
@@ -489,19 +609,19 @@ services:
       cyberpotinit:
         condition: service_healthy
     tmpfs:
-      - /tmp/honeytrap:uid=2000,gid=2000
+     - /tmp/honeytrap:uid=2000,gid=2000
     network_mode: "host"
     cap_add:
-      - NET_ADMIN
+     - NET_ADMIN
     image: ${CYBERPOT_REPO}/honeytrap:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/honeytrap/attacks:/opt/honeytrap/var/attacks
-      - ${CYBERPOT_DATA_PATH}/honeytrap/downloads:/opt/honeytrap/var/downloads
-      - ${CYBERPOT_DATA_PATH}/honeytrap/log:/opt/honeytrap/var/log
+     - ${CYBERPOT_DATA_PATH}/honeytrap/attacks:/opt/honeytrap/var/attacks
+     - ${CYBERPOT_DATA_PATH}/honeytrap/downloads:/opt/honeytrap/var/downloads
+     - ${CYBERPOT_DATA_PATH}/honeytrap/log:/opt/honeytrap/var/log
 
-  # Ipphoney service
+# Ipphoney service
   ipphoney:
     container_name: ipphoney
     restart: always
@@ -509,16 +629,16 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - ipphoney_local
+     - ipphoney_local
     ports:
-      - "631:631"
+     - "631:631"
     image: ${CYBERPOT_REPO}/ipphoney:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/ipphoney/log:/opt/ipphoney/log
+     - ${CYBERPOT_DATA_PATH}/ipphoney/log:/opt/ipphoney/log
 
-  # Log4pot service
+# Log4pot service
   log4pot:
     container_name: log4pot
     restart: always
@@ -526,23 +646,23 @@ services:
       cyberpotinit:
         condition: service_healthy
     tmpfs:
-      - /tmp:uid=2000,gid=2000
+     - /tmp:uid=2000,gid=2000
     networks:
-      - log4pot_local
+     - log4pot_local
     ports:
-      - "80:8080"
-      - "443:8080"
-      - "8080:8080"
-      - "9200:8080"
-      - "25565:8080"
+     - "80:8080"
+     - "443:8080"
+     - "8080:8080"
+     - "9200:8080"
+     - "25565:8080"
     image: ${CYBERPOT_REPO}/log4pot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/log4pot/log:/var/log/log4pot/log
-      - ${CYBERPOT_DATA_PATH}/log4pot/payloads:/var/log/log4pot/payloads
+     - ${CYBERPOT_DATA_PATH}/log4pot/log:/var/log/log4pot/log
+     - ${CYBERPOT_DATA_PATH}/log4pot/payloads:/var/log/log4pot/payloads
 
-  # Mailoney service
+# Mailoney service
   mailoney:
     container_name: mailoney
     restart: always
@@ -550,23 +670,23 @@ services:
       cyberpotinit:
         condition: service_healthy
     environment:
-      - HPFEEDS_SERVER=
-      - HPFEEDS_IDENT=user
-      - HPFEEDS_SECRET=pass
-      - HPFEEDS_PORT=20000
-      - HPFEEDS_CHANNELPREFIX=prefix
+     - HPFEEDS_SERVER=
+     - HPFEEDS_IDENT=user
+     - HPFEEDS_SECRET=pass
+     - HPFEEDS_PORT=20000
+     - HPFEEDS_CHANNELPREFIX=prefix
     networks:
-      - mailoney_local
+     - mailoney_local
     ports:
-      - "25:25"
-      - "587:25"
+     - "25:25"
+     - "587:25"
     image: ${CYBERPOT_REPO}/mailoney:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/mailoney/log:/opt/mailoney/logs
+     - ${CYBERPOT_DATA_PATH}/mailoney/log:/opt/mailoney/logs
 
-  # Medpot service
+# Medpot service
   medpot:
     container_name: medpot
     restart: always
@@ -574,16 +694,34 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - medpot_local
+     - medpot_local
     ports:
-      - "2575:2575"
+     - "2575:2575"
     image: ${CYBERPOT_REPO}/medpot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/medpot/log/:/var/log/medpot
+     - ${CYBERPOT_DATA_PATH}/medpot/log/:/var/log/medpot
 
-  # Redishoneypot service
+# Miniprint service
+  miniprint:
+    container_name: miniprint
+    restart: always
+    depends_on:
+      cyberpotinit:
+        condition: service_healthy
+    networks:
+     - miniprint_local
+    ports:
+      - "9100:9100"
+    image: ${CYBERPOT_REPO}/miniprint:${CYBERPOT_VERSION}
+    pull_policy: ${CYBERPOT_PULL_POLICY}
+    read_only: true
+    volumes:
+     - ${CYBERPOT_DATA_PATH}/miniprint/log/:/opt/miniprint/log/
+     - ${CYBERPOT_DATA_PATH}/miniprint/uploads/:/opt/miniprint/uploads/
+
+# Redishoneypot service
   redishoneypot:
     container_name: redishoneypot
     restart: always
@@ -591,39 +729,39 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - redishoneypot_local
+     - redishoneypot_local
     ports:
-      - "6379:6379"
+     - "6379:6379"
     image: ${CYBERPOT_REPO}/redishoneypot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/redishoneypot/log:/var/log/redishoneypot
+     - ${CYBERPOT_DATA_PATH}/redishoneypot/log:/var/log/redishoneypot
 
-  # SentryPeer service
+# SentryPeer service
   sentrypeer:
     container_name: sentrypeer
     restart: always
     depends_on:
       cyberpotinit:
         condition: service_healthy
-    #    environment:
-    #     - SENTRYPEER_PEER_TO_PEER=1
+#    environment:
+#     - SENTRYPEER_PEER_TO_PEER=1
     networks:
-      - sentrypeer_local
+     - sentrypeer_local
     ports:
-      #     - "4222:4222/udp"
-      - "5060:5060/tcp"
-      - "5060:5060/udp"
-    #     - "127.0.0.1:8082:8082"
+#     - "4222:4222/udp"
+     - "5060:5060/tcp"
+     - "5060:5060/udp"
+#     - "127.0.0.1:8082:8082"
     image: ${CYBERPOT_REPO}/sentrypeer:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/sentrypeer/log:/var/log/sentrypeer
+     - ${CYBERPOT_DATA_PATH}/sentrypeer/log:/var/log/sentrypeer
 
-  #### Snare / Tanner
-  ## Tanner Redis Service
+#### Snare / Tanner
+## Tanner Redis Service
   tanner_redis:
     container_name: tanner_redis
     restart: always
@@ -632,12 +770,12 @@ services:
         condition: service_healthy
     tty: true
     networks:
-      - tanner_local
+     - tanner_local
     image: ${CYBERPOT_REPO}/redis:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
 
-  ## PHP Sandbox service
+## PHP Sandbox service
   tanner_phpox:
     container_name: tanner_phpox
     restart: always
@@ -646,64 +784,64 @@ services:
         condition: service_healthy
     tty: true
     networks:
-      - tanner_local
+     - tanner_local
     image: ${CYBERPOT_REPO}/phpox:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
 
-  ## Tanner API service
+## Tanner API service
   tanner_api:
     container_name: tanner_api
     restart: always
     depends_on:
-      - tanner_redis
+     - tanner_redis
     tmpfs:
-      - /tmp/tanner:uid=2000,gid=2000
+     - /tmp/tanner:uid=2000,gid=2000
     tty: true
     networks:
-      - tanner_local
+     - tanner_local
     image: ${CYBERPOT_REPO}/tanner:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/tanner/log:/var/log/tanner
+     - ${CYBERPOT_DATA_PATH}/tanner/log:/var/log/tanner
     command: tannerapi
 
-  ## Tanner service
+## Tanner service
   tanner:
     container_name: tanner
     restart: always
     depends_on:
-      - tanner_api
-      - tanner_phpox
+     - tanner_api
+     - tanner_phpox
     tmpfs:
-      - /tmp/tanner:uid=2000,gid=2000
+     - /tmp/tanner:uid=2000,gid=2000
     tty: true
     networks:
-      - tanner_local
+     - tanner_local
     image: ${CYBERPOT_REPO}/tanner:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     command: tanner
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/tanner/log:/var/log/tanner
-      - ${CYBERPOT_DATA_PATH}/tanner/files:/opt/tanner/files
+     - ${CYBERPOT_DATA_PATH}/tanner/log:/var/log/tanner
+     - ${CYBERPOT_DATA_PATH}/tanner/files:/opt/tanner/files
 
-  ## Snare service
+## Snare service
   snare:
     container_name: snare
     restart: always
     depends_on:
-      - tanner
+     - tanner
     tty: true
     networks:
-      - tanner_local
+     - tanner_local
     ports:
-      - "80:80"
+     - "80:80"
     image: ${CYBERPOT_REPO}/snare:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
 
-  # Wordpot service
+# Wordpot service
   wordpot:
     container_name: wordpot
     restart: always
@@ -711,20 +849,21 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - wordpot_local
+     - wordpot_local
     ports:
-      - "80:80"
+     - "80:80"
     image: ${CYBERPOT_REPO}/wordpot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/wordpot/log:/opt/wordpot/logs/
+     - ${CYBERPOT_DATA_PATH}/wordpot/log:/opt/wordpot/logs/
 
-  ##################
-  #### NSM
-  ##################
 
-  # Fatt service
+##################
+#### NSM
+##################
+
+# Fatt service
   fatt:
     container_name: fatt
     restart: always
@@ -733,15 +872,15 @@ services:
         condition: service_healthy
     network_mode: "host"
     cap_add:
-      - NET_ADMIN
-      - SYS_NICE
-      - NET_RAW
+     - NET_ADMIN
+     - SYS_NICE
+     - NET_RAW
     image: ${CYBERPOT_REPO}/fatt:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     volumes:
-      - ${CYBERPOT_DATA_PATH}/fatt/log:/opt/fatt/log
+     - ${CYBERPOT_DATA_PATH}/fatt/log:/opt/fatt/log
 
-  # P0f service
+# P0f service
   p0f:
     container_name: p0f
     restart: always
@@ -753,9 +892,9 @@ services:
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/p0f/log:/var/log/p0f
+     - ${CYBERPOT_DATA_PATH}/p0f/log:/var/log/p0f
 
-  # Suricata service
+# Suricata service
   suricata:
     container_name: suricata
     restart: always
@@ -763,25 +902,26 @@ services:
       cyberpotinit:
         condition: service_healthy
     environment:
-      - OINKCODE=${OINKCODE:-OPEN} # Default to OPEN if unset or NULL (value provided by CyberPot .env)
+     - OINKCODE=${OINKCODE:-OPEN} # Default to OPEN if unset or NULL (value provided by CyberPot .env)
     # Loading external Rules from URL
     # - FROMURL="https://username:password@yoururl.com|https://username:password@otherurl.com"
     network_mode: "host"
     cap_add:
-      - NET_ADMIN
-      - SYS_NICE
-      - NET_RAW
+     - NET_ADMIN
+     - SYS_NICE
+     - NET_RAW
     image: ${CYBERPOT_REPO}/suricata:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     volumes:
-      - ${CYBERPOT_DATA_PATH}/suricata/log:/var/log/suricata
+     - ${CYBERPOT_DATA_PATH}/suricata/log:/var/log/suricata
 
-  ##################
-  #### Tools
-  ##################
 
-  #### ELK
-  ## Elasticsearch service
+##################
+#### Tools
+##################
+
+#### ELK
+## Elasticsearch service
   elasticsearch:
     container_name: elasticsearch
     restart: always
@@ -789,11 +929,11 @@ services:
       cyberpotinit:
         condition: service_healthy
     environment:
-      - bootstrap.memory_lock=true
-      - ES_JAVA_OPTS=-Xms2048m -Xmx2048m
-      - ES_TMPDIR=/tmp
+     - bootstrap.memory_lock=true
+     - ES_JAVA_OPTS=-Xms2048m -Xmx2048m
+     - ES_TMPDIR=/tmp
     cap_add:
-      - IPC_LOCK
+     - IPC_LOCK
     ulimits:
       memlock:
         soft: -1
@@ -803,13 +943,13 @@ services:
         hard: 65536
     mem_limit: 4g
     ports:
-      - "127.0.0.1:64298:9200"
+     - "127.0.0.1:64298:9200"
     image: ${CYBERPOT_REPO}/elasticsearch:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     volumes:
-      - ${CYBERPOT_DATA_PATH}:/data
+     - ${CYBERPOT_DATA_PATH}:/data
 
-  ## Kibana service
+## Kibana service
   kibana:
     container_name: kibana
     restart: always
@@ -818,11 +958,11 @@ services:
         condition: service_healthy
     mem_limit: 1g
     ports:
-      - "127.0.0.1:64296:5601"
+     - "127.0.0.1:64296:5601"
     image: ${CYBERPOT_REPO}/kibana:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
 
-  ## Logstash service
+## Logstash service
   logstash:
     container_name: logstash
     restart: always
@@ -830,20 +970,20 @@ services:
       elasticsearch:
         condition: service_healthy
     environment:
-      - LS_JAVA_OPTS=-Xms1024m -Xmx1024m
-      - CYBERPOT_TYPE=${CYBERPOT_TYPE:-HIVE}
-      - CYBERPOT_HIVE_USER=${CYBERPOT_HIVE_USER}
-      - CYBERPOT_HIVE_IP=${CYBERPOT_HIVE_IP}
-      - LS_SSL_VERIFICATION=${LS_SSL_VERIFICATION:-full}
+     - LS_JAVA_OPTS=-Xms1024m -Xmx1024m
+     - CYBERPOT_TYPE=${CYBERPOT_TYPE:-HIVE}
+     - CYBERPOT_HIVE_USER=${CYBERPOT_HIVE_USER}
+     - CYBERPOT_HIVE_IP=${CYBERPOT_HIVE_IP}
+     - LS_SSL_VERIFICATION=${LS_SSL_VERIFICATION:-full}
     ports:
-      - "127.0.0.1:64305:64305"
+     - "127.0.0.1:64305:64305"
     mem_limit: 2g
     image: ${CYBERPOT_REPO}/logstash:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     volumes:
-      - ${CYBERPOT_DATA_PATH}:/data
+     - ${CYBERPOT_DATA_PATH}:/data
 
-  ## Map Redis Service
+## Map Redis Service
   map_redis:
     container_name: map_redis
     restart: always
@@ -856,7 +996,7 @@ services:
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
 
-  ## Map Web Service
+## Map Web Service
   map_web:
     container_name: map_web
     restart: always
@@ -864,15 +1004,15 @@ services:
       cyberpotinit:
         condition: service_healthy
     environment:
-      - MAP_COMMAND=AttackMapServer.py
+     - MAP_COMMAND=AttackMapServer.py
     stop_signal: SIGKILL
     tty: true
     ports:
-      - "127.0.0.1:64299:64299"
+     - "127.0.0.1:64299:64299"
     image: ${CYBERPOT_REPO}/map:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
 
-  ## Map Data Service
+## Map Data Service
   map_data:
     container_name: map_data
     restart: always
@@ -880,16 +1020,16 @@ services:
       elasticsearch:
         condition: service_healthy
     environment:
-      - MAP_COMMAND=DataServer_v2.py
-      - CYBERPOT_ATTACKMAP_TEXT=${CYBERPOT_ATTACKMAP_TEXT}
-      - TZ=${CYBERPOT_ATTACKMAP_TEXT_TIMEZONE}
+     - MAP_COMMAND=DataServer_v2.py
+     - CYBERPOT_ATTACKMAP_TEXT=${CYBERPOT_ATTACKMAP_TEXT}
+     - TZ=${CYBERPOT_ATTACKMAP_TEXT_TIMEZONE}
     stop_signal: SIGKILL
     tty: true
     image: ${CYBERPOT_REPO}/map:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
-  #### /ELK
+#### /ELK
 
-  # Ewsposter service
+# Ewsposter service
   ewsposter:
     container_name: ewsposter
     restart: always
@@ -897,52 +1037,52 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - ewsposter_local
+     - ewsposter_local
     environment:
-      - EWS_HPFEEDS_ENABLE=false
-      - EWS_HPFEEDS_HOST=host
-      - EWS_HPFEEDS_PORT=port
-      - EWS_HPFEEDS_CHANNELS=channels
-      - EWS_HPFEEDS_IDENT=user
-      - EWS_HPFEEDS_SECRET=secret
-      - EWS_HPFEEDS_TLSCERT=false
-      - EWS_HPFEEDS_FORMAT=json
+     - EWS_HPFEEDS_ENABLE=false
+     - EWS_HPFEEDS_HOST=host
+     - EWS_HPFEEDS_PORT=port
+     - EWS_HPFEEDS_CHANNELS=channels
+     - EWS_HPFEEDS_IDENT=user
+     - EWS_HPFEEDS_SECRET=secret
+     - EWS_HPFEEDS_TLSCERT=false
+     - EWS_HPFEEDS_FORMAT=json
     image: ${CYBERPOT_REPO}/ewsposter:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     volumes:
-      - ${CYBERPOT_DATA_PATH}:/data
-      - ${CYBERPOT_DATA_PATH}/ews/conf/ews.ip:/opt/ewsposter/ews.ip
+     - ${CYBERPOT_DATA_PATH}:/data
+     - ${CYBERPOT_DATA_PATH}/ews/conf/ews.ip:/opt/ewsposter/ews.ip
 
-  # Nginx service
+# Nginx service
   nginx:
     container_name: nginx
     restart: always
     environment:
-      - CYBERPOT_OSTYPE=${CYBERPOT_OSTYPE}
+     - CYBERPOT_OSTYPE=${CYBERPOT_OSTYPE}
     depends_on:
       cyberpotinit:
         condition: service_healthy
     tmpfs:
-      - /var/tmp/nginx/client_body
-      - /var/tmp/nginx/proxy
-      - /var/tmp/nginx/fastcgi
-      - /var/tmp/nginx/uwsgi
-      - /var/tmp/nginx/scgi
-      - /run
-      - /var/lib/nginx/tmp:uid=100,gid=82
+     - /var/tmp/nginx/client_body
+     - /var/tmp/nginx/proxy
+     - /var/tmp/nginx/fastcgi
+     - /var/tmp/nginx/uwsgi
+     - /var/tmp/nginx/scgi
+     - /run
+     - /var/lib/nginx/tmp:uid=100,gid=82
     network_mode: "host"
     ports:
-      - "64297:64297"
+     - "64297:64297"
     image: ${CYBERPOT_REPO}/nginx:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     read_only: true
     volumes:
-      - ${CYBERPOT_DATA_PATH}/nginx/cert/:/etc/nginx/cert/:ro
-      - ${CYBERPOT_DATA_PATH}/nginx/conf/nginxpasswd:/etc/nginx/nginxpasswd:ro
-      - ${CYBERPOT_DATA_PATH}/nginx/conf/lswebpasswd:/etc/nginx/lswebpasswd:ro
-      - ${CYBERPOT_DATA_PATH}/nginx/log/:/var/log/nginx/
+     - ${CYBERPOT_DATA_PATH}/nginx/cert/:/etc/nginx/cert/:ro
+     - ${CYBERPOT_DATA_PATH}/nginx/conf/nginxpasswd:/etc/nginx/nginxpasswd:ro
+     - ${CYBERPOT_DATA_PATH}/nginx/conf/lswebpasswd:/etc/nginx/lswebpasswd:ro
+     - ${CYBERPOT_DATA_PATH}/nginx/log/:/var/log/nginx/
 
-  # Spiderfoot service
+# Spiderfoot service
   spiderfoot:
     container_name: spiderfoot
     restart: always
@@ -950,10 +1090,10 @@ services:
       cyberpotinit:
         condition: service_healthy
     networks:
-      - spiderfoot_local
+     - spiderfoot_local
     ports:
-      - "127.0.0.1:64303:8080"
+     - "127.0.0.1:64303:8080"
     image: ${CYBERPOT_REPO}/spiderfoot:${CYBERPOT_VERSION}
     pull_policy: ${CYBERPOT_PULL_POLICY}
     volumes:
-      - ${CYBERPOT_DATA_PATH}/spiderfoot:/home/spiderfoot/.spiderfoot
+     - ${CYBERPOT_DATA_PATH}/spiderfoot:/home/spiderfoot/.spiderfoot

@@ -8,7 +8,7 @@ This dockerized version is part of the **[CyberPot community honeypot](http://kh
 
 The `Dockerfile` contains the blueprint for the dockerized glastopf and will be used to setup the docker image.
 
-The `docker-compose.yml` contains the necessary settings to test glastopf using `docker-compose`. This will ensure to start the docker container with the appropriate permissions and port mappings.
+The `docker-compose.yml` contains the necessary settings to test glastopf using `docker-compose`. This will ensure to start the docker container with the appropriate permissions and port mappings.  
 
 # Glastopf Dashboard
 

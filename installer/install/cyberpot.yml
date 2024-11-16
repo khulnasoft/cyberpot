@@ -101,7 +101,7 @@
 # CyberPot - Install recommended, remove conflicting packages #
 ############################################################
 
-- name: CyberPot - Install recommended, remove conflicting packages
+- name: CyberPot - Install recommended, remove conflicting packages 
   hosts: all
   gather_facts: true
   become: true
@@ -173,7 +173,7 @@
 
     - name: Install grc from remote repo (AlmaLinux, Rocky)
       ansible.builtin.dnf:
-        name: "https://github.com/kriipke/grc/releases/download/1.13.8/grc-1.13.8-1.el7.noarch.rpm"
+        name: 'https://github.com/kriipke/grc/releases/download/1.13.8/grc-1.13.8-1.el7.noarch.rpm'
         disable_gpg_check: true
         state: present
       when: ansible_distribution in ["AlmaLinux", "Rocky"]
@@ -373,6 +373,7 @@
         - "AlmaLinux"
         - "Rocky"
 
+
 #################################
 # CyberPot - Install Docker Engine #
 #################################
@@ -402,11 +403,11 @@
     - name: Install Docker Engine packages (AlmaLinux, Debian, Fedora, Raspbian, Rocky, Ubuntu)
       package:
         name:
-          - docker-ce
-          - docker-ce-cli
+          - docker-ce 
+          - docker-ce-cli 
           - containerd.io
           - docker-buildx-plugin
-          - docker-compose-plugin
+          - docker-compose-plugin 
         state: latest
         update_cache: yes
       when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "Raspbian", "Rocky", "Ubuntu"]
@@ -563,8 +564,8 @@
     - name: Set SELinux config to permissive (AlmaLinux, Fedora, Rocky)
       lineinfile:
         path: /etc/selinux/config
-        regexp: "^SELINUX="
-        line: "SELINUX=permissive"
+        regexp: '^SELINUX='
+        line: 'SELINUX=permissive'
       when: ansible_distribution in ["AlmaLinux", "Fedora", "Rocky"]
       tags:
         - "AlmaLinux"
@@ -600,8 +601,8 @@
     - name: Modify DNSStubListener in resolved.conf (Fedora, Ubuntu)
       lineinfile:
         path: /etc/systemd/resolved.conf
-        regexp: "^.*DNSStubListener=.*"
-        line: "DNSStubListener=no"
+        regexp: '^.*DNSStubListener=.*'
+        line: 'DNSStubListener=no'
         state: present
       when: ansible_distribution in ["Fedora", "Ubuntu"]
       tags:
@@ -758,9 +759,9 @@
 
     - name: Clone / Update CyberPot repository (All)
       git:
-        repo: "https://github.com/khulnasoft/cyberpot"
-        dest: "/home/{{ ansible_user_id }}/cyberpot/"
-        version: master
+        repo: 'https://github.com/khulnasoft/cyberpot'
+        dest: '/home/{{ ansible_user_id }}/cyberpot/'
+        version: 24.04.1
         clone: yes
         update: no
       when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
@@ -769,7 +770,7 @@
       become: true
       user:
         name: "{{ ansible_user_id }}"
-        groups:
+        groups: 
           - docker
           - cyberpot
         append: yes
@@ -796,11 +797,11 @@
     - name: Install systemd service (All)
       become: true
       ansible.builtin.template:
-        src: "/home/{{ ansible_user_id }}/cyberpot/installer/install/cyberpot.service"
-        dest: "/etc/systemd/system/cyberpot.service"
+        src: '/home/{{ ansible_user_id }}/cyberpot/installer/install/cyberpot.service'
+        dest: '/etc/systemd/system/cyberpot.service'
         owner: root
         group: root
-        mode: "0755"
+        mode: '0755'
       notify: Reload systemd and enable service
       when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
 
@@ -838,6 +839,6 @@
         user: root
         minute: "{{ random_minute }}"
         hour: "{{ random_hour }}"
-        job: 'bash -c ''systemctl stop cyberpot.service && docker container prune -f; docker image prune -f; docker volume prune -f; /usr/sbin/shutdown -r +1 "CyberPot Daily Reboot"'''
+        job: "bash -c 'systemctl stop cyberpot.service && docker container prune -f; docker image prune -f; docker volume prune -f; /usr/sbin/shutdown -r +1 \"CyberPot Daily Reboot\"'"
         state: present
       when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]

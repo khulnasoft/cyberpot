@@ -2,18 +2,19 @@ networks:
   hellpot_local:
 
 services:
-  # hellpot service
+
+# hellpot service
   hellpot:
     build: .
     container_name: hellpot
     restart: always
-    #    cpu_count: 1
-    #    cpus: 0.25
+#    cpu_count: 1
+#    cpus: 0.25
     networks:
-      - hellpot_local
+     - hellpot_local
     ports:
-      - "80:8080"
+     - "80:8080"
     image: "khulnasoft/hellpot:24.04"
     read_only: true
     volumes:
-      - $HOME/cyberpot/data/hellpot/log:/var/log/hellpot
+     - $HOME/cyberpot/data/hellpot/log:/var/log/hellpot

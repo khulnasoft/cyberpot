@@ -4,9 +4,8 @@ ENV DEBIAN_FRONTEND noninteractive
 # Include dist
 COPY dist/ /root/dist/
 #
-# Setup apt
+# Install packages
 RUN apt-get update && \
-    apt-get update -y && \
 #
 # Install packages
     apt-get install -y autoconf \
@@ -55,7 +54,12 @@ RUN apt-get update && \
                      libnetfilter-queue-dev \
                      libpq-dev && \
     apt-get autoremove -y --purge && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache /root/* /opt/honeytrap/.git
+    apt-get clean && \
+        rm -rf /var/lib/apt/lists/* \
+            /tmp/* /var/tmp/* \
+            /root/.cache \
+            /root/* \
+            /opt/honeytrap/.git
 #
 # Start honeytrap
 USER honeytrap:honeytrap

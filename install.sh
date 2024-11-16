@@ -120,7 +120,7 @@ fi
 if [ ! -f installer/install/cyberpot.yml ] && [ ! -f cyberpot.yml ];
   then
     echo "### Now downloading CyberPot Ansible Installation Playbook ... "
-    wget -qO cyberpot.yml https://github.com/khulnasoft/cyberpot/raw/master/installer/install/cyberpot.yml
+    wget -qO cyberpot.yml https://raw.githubusercontent.com/khulnasoft/cyberpot/24.04.1/installer/install/cyberpot.yml
     myANSIBLE_CYBERPOT_PLAYBOOK="cyberpot.yml"
     echo
   else

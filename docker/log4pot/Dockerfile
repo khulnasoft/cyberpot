@@ -19,8 +19,8 @@ RUN apt-get update -y && \
 		python3 \
 		python3-dev \
 		rust-all && \
-     pip3 install --upgrade pip && \
-     pip3 install poetry pycurl && \
+    pip3 install --upgrade pip && \
+    pip3 install poetry pycurl && \
 #	     
 # Install log4pot from GitHub and setup
     mkdir -p /opt /var/log/log4pot && \
@@ -46,8 +46,13 @@ RUN apt-get update -y && \
 		libssl-dev \
 		python3-dev \
 		rust-all && \
-   apt-get autoremove -y --purge && \
-   apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache /opt/Log4Pot/.git
+    apt-get autoremove -y --purge && \
+    apt-get clean && \
+	rm -rf /var/lib/apt/lists/* \
+		/tmp/* \
+		/var/tmp/* \
+		/root/.cache \
+		/opt/Log4Pot/.git
 #
 # Start log4pot
 STOPSIGNAL SIGINT

@@ -1,0 +1,421 @@
+# CyberPot Docker Compose Image Builder (use only for building docker images)
+# Settings in .env
+
+##################
+#### Anchors
+##################
+
+# Common build config
+x-common-build: &common-build
+  dockerfile: ./Dockerfile
+  platforms:
+    - ${CYBERPOT_AMD64}
+    - ${CYBERPOT_ARM64}
+
+services:
+
+##################
+#### Honeypots
+##################
+
+# Adbhoney
+  adbhoney:
+    image: ${CYBERPOT_DOCKER_REPO}/adbhoney:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/adbhoney:${CYBERPOT_VERSION}
+      context: ../adbhoney/
+      <<: *common-build
+
+# Beelzebub
+  beelzebub:
+    image: ${CYBERPOT_DOCKER_REPO}/beelzebub:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/beelzebub:${CYBERPOT_VERSION}
+      context: ../beelzebub/
+      <<: *common-build
+
+# Ciscoasa
+  ciscoasa:
+    image: ${CYBERPOT_DOCKER_REPO}/ciscoasa:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/ciscoasa:${CYBERPOT_VERSION}
+      context: ../ciscoasa/
+      <<: *common-build
+
+# Citrixhoneypot
+  citrixhoneypot:
+    image: ${CYBERPOT_DOCKER_REPO}/citrixhoneypot:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/citrixhoneypot:${CYBERPOT_VERSION}
+      context: ../citrixhoneypot/
+      <<: *common-build
+
+# Conpot
+  conpot:
+    image: ${CYBERPOT_DOCKER_REPO}/conpot:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/conpot:${CYBERPOT_VERSION}
+      context: ../conpot/
+      <<: *common-build
+
+# Cowrie
+  cowrie:
+    image: ${CYBERPOT_DOCKER_REPO}/cowrie:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/cowrie:${CYBERPOT_VERSION}
+      context: ../cowrie/
+      <<: *common-build
+
+# Ddospot
+  ddospot:
+    image: ${CYBERPOT_DOCKER_REPO}/ddospot:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/ddospot:${CYBERPOT_VERSION}
+      context: ../ddospot/
+      <<: *common-build
+
+# Dicompot
+  dicompot:
+    image: ${CYBERPOT_DOCKER_REPO}/dicompot:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/dicompot:${CYBERPOT_VERSION}
+      context: ../dicompot/
+      <<: *common-build
+
+# Dionaea
+  dionaea:
+    image: ${CYBERPOT_DOCKER_REPO}/dionaea:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/dionaea:${CYBERPOT_VERSION}
+      context: ../dionaea/
+      <<: *common-build
+
+# Elasticpot
+  elasticpot:
+    image: ${CYBERPOT_DOCKER_REPO}/elasticpot:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/elasticpot:${CYBERPOT_VERSION}
+      context: ../elasticpot/
+      <<: *common-build
+
+# Endlessh
+  endlessh:
+    image: ${CYBERPOT_DOCKER_REPO}/endlessh:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/endlessh:${CYBERPOT_VERSION}
+      context: ../endlessh/
+      <<: *common-build
+
+# Galah
+  galah:
+    image: ${CYBERPOT_DOCKER_REPO}/galah:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/galah:${CYBERPOT_VERSION}
+      context: ../galah/
+      <<: *common-build
+
+# Glutton
+#  glutton:
+#    image: ${CYBERPOT_DOCKER_REPO}/glutton:${CYBERPOT_VERSION}
+##    build:
+#      tags:
+#        - ${CYBERPOT_GHCR_REPO}/glutton:${CYBERPOT_VERSION}
+#      context: ../glutton/
+#      <<: *common-build
+
+# Go-pot
+  go-pot:
+    image: ${CYBERPOT_DOCKER_REPO}/go-pot:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/go-pot:${CYBERPOT_VERSION}
+      context: ../go-pot/
+      <<: *common-build
+
+# H0neytr4p
+  h0neytr4p:
+    image: ${CYBERPOT_DOCKER_REPO}/h0neytr4p:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/h0neytr4p:${CYBERPOT_VERSION}
+      context: ../h0neytr4p/
+      <<: *common-build
+
+# Hellpot
+  hellpot:
+    image: ${CYBERPOT_DOCKER_REPO}/hellpot:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/hellpot:${CYBERPOT_VERSION}
+      context: ../hellpot/
+      <<: *common-build
+
+# Herlading
+  heralding:
+    image: ${CYBERPOT_DOCKER_REPO}/heralding:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/heralding:${CYBERPOT_VERSION}
+      context: ../heralding/
+      <<: *common-build
+
+# Honeyaml
+  honeyaml:
+    image: ${CYBERPOT_DOCKER_REPO}/honeyaml:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/honeyaml:${CYBERPOT_VERSION}
+      context: ../honeyaml/
+      <<: *common-build
+
+# Honeypots
+  honeypots:
+    image: ${CYBERPOT_DOCKER_REPO}/honeypots:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/honeypots:${CYBERPOT_VERSION}
+      context: ../honeypots/
+      <<: *common-build
+
+# Honeytrap
+  honeytrap:
+    image: ${CYBERPOT_DOCKER_REPO}/honeytrap:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/honeytrap:${CYBERPOT_VERSION}
+      context: ../honeytrap/
+      <<: *common-build
+
+# Ipphoney
+  ipphoney:
+    image: ${CYBERPOT_DOCKER_REPO}/ipphoney:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/ipphoney:${CYBERPOT_VERSION}
+      context: ../ipphoney/
+      <<: *common-build
+
+# Log4pot
+  log4pot:
+    image: ${CYBERPOT_DOCKER_REPO}/log4pot:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/log4pot:${CYBERPOT_VERSION}
+      context: ../log4pot/
+      <<: *common-build
+
+# Mailoney
+  mailoney:
+    image: ${CYBERPOT_DOCKER_REPO}/mailoney:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/mailoney:${CYBERPOT_VERSION}
+      context: ../mailoney/
+      <<: *common-build
+
+# Medpot
+  medpot:
+    image: ${CYBERPOT_DOCKER_REPO}/medpot:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/medpot:${CYBERPOT_VERSION}
+      context: ../medpot/
+      <<: *common-build
+
+# Miniprint
+  miniprint:
+    image: ${CYBERPOT_DOCKER_REPO}/miniprint:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/miniprint:${CYBERPOT_VERSION}
+      context: ../miniprint/
+      <<: *common-build
+
+# Redishoneypot
+  redishoneypot:
+    image: ${CYBERPOT_DOCKER_REPO}/redishoneypot:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/redishoneypot:${CYBERPOT_VERSION}
+      context: ../redishoneypot/
+      <<: *common-build
+
+# Sentrypeer
+  sentrypeer:
+    image: ${CYBERPOT_DOCKER_REPO}/sentrypeer:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/sentrypeer:${CYBERPOT_VERSION}
+      context: ../sentrypeer/
+      <<: *common-build
+
+#### Snare / Tanner
+## Tanner Redis
+  redis:
+    image: ${CYBERPOT_DOCKER_REPO}/redis:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/redis:${CYBERPOT_VERSION}
+      context: ../tanner/redis/
+      <<: *common-build
+
+## PHP Sandbox
+  phpox:
+    image: ${CYBERPOT_DOCKER_REPO}/phpox:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/phpox:${CYBERPOT_VERSION}
+      context: ../tanner/phpox/
+      <<: *common-build
+
+## Tanner
+  tanner:
+    image: ${CYBERPOT_DOCKER_REPO}/tanner:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/tanner:${CYBERPOT_VERSION}
+      context: ../tanner/tanner/
+      <<: *common-build
+
+## Snare
+  snare:
+    image: ${CYBERPOT_DOCKER_REPO}/snare:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/snare:${CYBERPOT_VERSION}
+      context: ../tanner/snare/
+      <<: *common-build
+####
+
+# Wordpot
+  wordpot:
+    image: ${CYBERPOT_DOCKER_REPO}/wordpot:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/wordpot:${CYBERPOT_VERSION}
+      context: ../wordpot/
+      <<: *common-build
+
+
+##################
+#### NSM
+##################
+
+# Fatt
+  fatt:
+    image: ${CYBERPOT_DOCKER_REPO}/fatt:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/fatt:${CYBERPOT_VERSION}
+      context: ../fatt/
+      <<: *common-build
+
+# P0f
+  p0f:
+    image: ${CYBERPOT_DOCKER_REPO}/p0f:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/p0f:${CYBERPOT_VERSION}
+      context: ../p0f/
+      <<: *common-build
+
+# Suricata
+  suricata:
+    image: ${CYBERPOT_DOCKER_REPO}/suricata:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/suricata:${CYBERPOT_VERSION}
+      context: ../suricata/
+      <<: *common-build
+
+
+##################
+#### Tools
+##################
+
+# CyberPot Init
+  cyberpotinit:
+    image: ${CYBERPOT_DOCKER_REPO}/cyberpotinit:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/cyberpotinit:${CYBERPOT_VERSION}
+      context: ../cyberpotinit/
+      <<: *common-build
+
+#### ELK
+## Elasticsearch
+  elasticsearch:
+    image: ${CYBERPOT_DOCKER_REPO}/elasticsearch:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/elasticsearch:${CYBERPOT_VERSION}
+      context: ../elk/elasticsearch/
+      <<: *common-build
+
+## Kibana
+  kibana:
+    image: ${CYBERPOT_DOCKER_REPO}/kibana:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/kibana:${CYBERPOT_VERSION}
+      context: ../elk/kibana/
+      <<: *common-build
+
+## Logstash
+  logstash:
+    image: ${CYBERPOT_DOCKER_REPO}/logstash:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/logstash:${CYBERPOT_VERSION}
+      context: ../elk/logstash/
+      <<: *common-build
+
+## Map Web
+  map:
+    image: ${CYBERPOT_DOCKER_REPO}/map:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/map:${CYBERPOT_VERSION}
+      context: ../elk/map/
+      <<: *common-build
+####
+
+# Ewsposter
+  ewsposter:
+    image: ${CYBERPOT_DOCKER_REPO}/ewsposter:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/ewsposter:${CYBERPOT_VERSION}
+      context: ../ewsposter/
+      <<: *common-build
+
+# Nginx
+  nginx:
+    image: ${CYBERPOT_DOCKER_REPO}/nginx:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/nginx:${CYBERPOT_VERSION}
+      context: ../nginx/
+      <<: *common-build
+
+# Spiderfoot
+  spiderfoot:
+    image: ${CYBERPOT_DOCKER_REPO}/spiderfoot:${CYBERPOT_VERSION}
+    build:
+      tags:
+        - ${CYBERPOT_GHCR_REPO}/spiderfoot:${CYBERPOT_VERSION}
+      context: ../spiderfoot/
+      <<: *common-build
+

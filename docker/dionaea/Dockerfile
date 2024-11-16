@@ -4,12 +4,22 @@ ENV DEBIAN_FRONTEND noninteractive
 # Include dist
 COPY dist/ /root/dist/
 #
+# Check if APT_PROXY is set and configure apt to use the proxy
+RUN bash -c 'if [ -n "${http_proxy}" ]; then \
+                 echo "Using APT proxy at ${http_proxy}"; \
+                 echo "Acquire::http::Proxy \"${http_proxy}\";" > /etc/apt/apt.conf.d/01proxy; \
+               else \
+                 echo "APT proxy not configured, proceeding without proxy"; \
+             fi' && \
+#    bash -c 'echo "Acquire::http::Proxy::ports.ubuntu.com DIRECT;" > /etc/apt/apt.conf.d/99force-no-proxy' && \
+#
 # Determine arch, get and install packages
-RUN ARCH=$(arch) && \
+    ARCH=$(arch) && \
       if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; fi && \
       if [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi && \
     echo "$ARCH" && \
     cd /root/dist/ && \
+# Setup apt
     apt-get update -y && \
     apt-get install wget -y && \
     wget http://ftp.us.debian.org/debian/pool/main/libe/libemu/libemu2_0.2.0+git20120122-1.2+b1_$ARCH.deb \
@@ -109,7 +119,12 @@ RUN ARCH=$(arch) && \
 #
     apt-get autoremove --purge -y && \
     apt-get clean && \
-    rm -rf /root/* /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache /opt/dionaea/.git
+    rm -rf /root/* \
+           /var/lib/apt/lists/* \
+           /tmp/* \
+           /var/tmp/* \
+           /root/.cache \
+           /opt/dionaea/.git
 #
 # Start dionaea
 STOPSIGNAL SIGINT

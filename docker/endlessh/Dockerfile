@@ -1,7 +1,7 @@
 FROM alpine:3.16 AS builder
 #
 # Include dist
-ADD dist/ /root/dist/
+COPY dist/ /root/dist/
 #
 # Install packages
 RUN apk -U add --no-cache \
@@ -32,8 +32,8 @@ RUN apk -U add --no-cache \
     #setcap cap_net_bind_service=+ep /usr/bin/python3.8 && \
 #
 # Clean up
-    rm -rf /root/* && \
-    rm -rf /var/cache/apk/*
+    rm -rf /root/* \
+           /var/cache/apk/*
 #
 # Set workdir and start endlessh
 STOPSIGNAL SIGINT

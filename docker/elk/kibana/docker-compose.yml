@@ -1,12 +1,13 @@
 services:
-  ## Kibana service
+
+## Kibana service
   kibana:
     build: .
     container_name: kibana
     restart: always
-    #    depends_on:
-    #      elasticsearch:
-    #        condition: service_healthy
+#    depends_on:
+#      elasticsearch:
+#        condition: service_healthy
     ports:
-      - "127.0.0.1:64296:5601"
+     - "127.0.0.1:64296:5601"
     image: "khulnasoft/kibana:24.04"
