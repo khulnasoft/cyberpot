@@ -429,25 +429,26 @@ services:
      - ${CYBERPOT_DATA_PATH}/galah/cert:/opt/galah/config/cert
      - ${CYBERPOT_DATA_PATH}/galah/log:/opt/galah/log
 
-# # Glutton service
-  # glutton:
-    # container_name: glutton
-    # restart: always
-    # depends_on:
-      # cyberpotinit:
-        # condition: service_healthy
-    # tmpfs:
-     # - /var/lib/glutton:uid=2000,gid=2000
-     # - /run:uid=2000,gid=2000
-    # network_mode: "host"
-    # cap_add:
-     # - NET_ADMIN
-    # image: ${CYBERPOT_REPO}/glutton:${CYBERPOT_VERSION}
-    # pull_policy: ${CYBERPOT_PULL_POLICY}
-    # read_only: true
-    # volumes:
-     # - ${CYBERPOT_DATA_PATH}/glutton/log:/var/log/glutton
-     # - ${CYBERPOT_DATA_PATH}/glutton/payloads:/opt/glutton/payloads
+# Glutton service
+  glutton:
+    container_name: glutton
+    restart: always
+    depends_on:
+      cyberpotinit:
+        condition: service_healthy
+    tmpfs:
+     - /var/lib/glutton:uid=2000,gid=2000
+     - /run:uid=2000,gid=2000
+    network_mode: "host"
+    cap_add:
+     - NET_ADMIN
+    image: ${CYBERPOT_REPO}/glutton:${CYBERPOT_VERSION}
+    pull_policy: ${CYBERPOT_PULL_POLICY}
+    read_only: true
+    volumes:
+     - ${CYBERPOT_DATA_PATH}/glutton/log:/var/log/glutton
+     - ${CYBERPOT_DATA_PATH}/glutton/payloads:/opt/glutton/payloads
+
 
 # Go-pot service
   go-pot:
