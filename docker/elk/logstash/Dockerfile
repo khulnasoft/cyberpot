@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 #
 # VARS
-ENV LS_VER=8.14.2
+ENV LS_VER=8.17.3
 # Include dist
 COPY dist/ /root/dist/
 #
