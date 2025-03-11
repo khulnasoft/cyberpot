@@ -14,7 +14,7 @@ services:
      - go-pot_local
     ports:
       - "8080:8080"
-    image: dtagdevsec/go-pot:24.04
+    image: khulnasoft/go-pot:24.04
     read_only: true
     volumes:
      - $HOME/cyberpot/data/go-pot/log/:/opt/go-pot/log/

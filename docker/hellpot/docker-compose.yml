@@ -14,7 +14,7 @@ services:
      - hellpot_local
     ports:
      - "80:8080"
-    image: "dtagdevsec/hellpot:24.04"
+    image: "khulnasoft/hellpot:24.04"
     read_only: true
     volumes:
      - $HOME/cyberpot/data/hellpot/log:/var/log/hellpot

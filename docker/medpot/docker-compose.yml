@@ -14,7 +14,7 @@ services:
      - medpot_local
     ports:
      - "2575:2575"
-    image: "dtagdevsec/medpot:24.04"
+    image: "khulnasoft/medpot:24.04"
     read_only: true
     volumes:
      - $HOME/cyberpot/data/medpot/log/:/var/log/medpot

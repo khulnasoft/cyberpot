@@ -9,4 +9,4 @@ if (-Not (Test-Path $nginxpasswdPath)) {
 }
 
 # Run the Docker container without specifying UID / GID
-docker run -v "${homePath}:/data" --entrypoint bash -it dtagdevsec/cyberpotinit:24.04.1 "/opt/cyberpot/bin/genuser.sh"
+docker run -v "${homePath}:/data" --entrypoint bash -it khulnasoft/cyberpotinit:24.04.1 "/opt/cyberpot/bin/genuser.sh"

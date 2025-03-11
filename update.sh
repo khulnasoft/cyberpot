@@ -165,9 +165,9 @@ function fuUPDATER () {
 	echo "### Now pulling latest docker images ..."
 	echo "######$myBLUE This might take a while, please be patient!$myWHITE"
 	fuPULLIMAGES
-	fuREMOVEOLDIMAGES "dtagdevsec/*:dev"
+	fuREMOVEOLDIMAGES "khulnasoft/*:dev"
 	fuREMOVEOLDIMAGES "ghcr.io/khulnasoft/*:dev"
-	fuREMOVEOLDIMAGES "dtagdevsec/*:24.04"
+	fuREMOVEOLDIMAGES "khulnasoft/*:24.04"
 	fuREMOVEOLDIMAGES "ghcr.io/khulnasoft/*:24.04"
 	echo
 	echo "### If you made changes to docker-compose.yml please ensure to add them again."

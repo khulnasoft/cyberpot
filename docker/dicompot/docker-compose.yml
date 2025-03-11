@@ -18,7 +18,7 @@ services:
     ports:
      - "104:11112"
      - "11112:11112"
-    image: "dtagdevsec/dicompot:24.04"
+    image: "khulnasoft/dicompot:24.04"
     read_only: true
     volumes:
      - $HOME/cyberpot/data/dicompot/log:/var/log/dicompot

@@ -14,7 +14,7 @@ services:
      - elasticpot_local
     ports:
      - "9200:9200"
-    image: "dtagdevsec/elasticpot:24.04"
+    image: "khulnasoft/elasticpot:24.04"
     read_only: true
     volumes:
      - $HOME/cyberpot/data/elasticpot/log:/opt/elasticpot/log
