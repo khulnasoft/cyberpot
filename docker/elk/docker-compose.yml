@@ -1,16 +1,17 @@
 services:
-  # ELK services
-  ## Elasticsearch service
+
+# ELK services
+## Elasticsearch service
   elasticsearch:
     build: elasticsearch/.
     container_name: elasticsearch
     restart: always
     environment:
-      - bootstrap.memory_lock=true
-      - ES_JAVA_OPTS=-Xms2048m -Xmx2048m
-      - ES_TMPDIR=/tmp
+     - bootstrap.memory_lock=true
+     - ES_JAVA_OPTS=-Xms2048m -Xmx2048m
+     - ES_TMPDIR=/tmp
     cap_add:
-      - IPC_LOCK
+     - IPC_LOCK
     ulimits:
       memlock:
         soft: -1
@@ -20,12 +21,12 @@ services:
         hard: 65536
     mem_limit: 4g
     ports:
-      - "127.0.0.1:64298:9200"
-    image: "khulnasoft/elasticsearch:24.04"
+     - "127.0.0.1:64298:9200"
+    image: "dtagdevsec/elasticsearch:24.04"
     volumes:
-      - $HOME/cyberpot/data:/data
+     - $HOME/cyberpot/data:/data
 
-  ## Kibana service
+## Kibana service
   kibana:
     build: kibana/.
     container_name: kibana
@@ -36,25 +37,25 @@ services:
         condition: service_healthy
     mem_limit: 1g
     ports:
-      - "127.0.0.1:64296:5601"
-    image: "khulnasoft/kibana:24.04"
+     - "127.0.0.1:64296:5601"
+    image: "dtagdevsec/kibana:24.04"
 
-  ## Logstash service
+## Logstash service
   logstash:
     build: logstash/.
     container_name: logstash
     restart: always
-    #    environment:
-    #     - LS_JAVA_OPTS=-Xms2048m -Xmx2048m
+#    environment:
+#     - LS_JAVA_OPTS=-Xms2048m -Xmx2048m
     depends_on:
       elasticsearch:
         condition: service_healthy
-    image: "khulnasoft/logstash:24.04"
+    image: "dtagdevsec/logstash:24.04"
     volumes:
-      - $HOME/cyberpot/data:/data
-  #     - /root/cyberpot/docker/elk/logstash/dist/logstash.conf:/etc/logstash/conf.d/logstash.conf
+     - $HOME/cyberpot/data:/data
+#     - /root/cyberpot/docker/elk/logstash/dist/logstash.conf:/etc/logstash/conf.d/logstash.conf
 
-  # Map Redis Service
+# Map Redis Service
   map_redis:
     container_name: map_redis
     restart: always
@@ -62,32 +63,32 @@ services:
     tty: true
     ports:
       - "127.0.0.1:6379:6379"
-    image: "khulnasoft/redis:24.04"
+    image: "dtagdevsec/redis:24.04"
     read_only: true
 
-  # Map Web Service
+# Map Web Service
   map_web:
     build: map/.
     container_name: map_web
     restart: always
     environment:
-      - MAP_COMMAND=AttackMapServer.py
+     - MAP_COMMAND=AttackMapServer.py
     stop_signal: SIGKILL
     tty: true
     ports:
-      - "127.0.0.1:64299:64299"
-    image: "khulnasoft/map:24.04"
+     - "127.0.0.1:64299:64299"
+    image: "dtagdevsec/map:24.04"
     depends_on:
-      - map_redis
+     - map_redis
 
-  # Map Data Service
+# Map Data Service
   map_data:
     container_name: map_data
     restart: always
     environment:
-      - MAP_COMMAND=DataServer_v2.py
+     - MAP_COMMAND=DataServer_v2.py
     stop_signal: SIGKILL
     tty: true
-    image: "khulnasoft/map:24.04"
+    image: "dtagdevsec/map:24.04"
     depends_on:
-      - map_redis
+     - map_redis

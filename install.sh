@@ -10,12 +10,11 @@ myPACKAGES_OPENSUSE="ansible apache2-utils cracklib wget"
 
 
 myINSTALLER=$(cat << "EOF"
-   ______      __              ____        __ 
-  / ____/_  __/ /_  ___  _____/ __ \____  / /_
- / /   / / / / __ \/ _ \/ ___/ /_/ / __ \/ __/
-/ /___/ /_/ / /_/ /  __/ /  / ____/ /_/ / /_  
-\____/\__, /_.___/\___/_/  /_/    \____/\__/  
-     /____/                                   
+ _____     ____       _      ___           _        _ _
+|_   _|   |  _ \ ___ | |_   |_ _|_ __  ___| |_ __ _| | | ___ _ __
+  | |_____| |_) / _ \| __|   | || '_ \/ __| __/ _` | | |/ _ \ '__|
+  | |_____|  __/ (_) | |_    | || | | \__ \ || (_| | | |  __/ |
+  |_|     |_|   \___/ \__|  |___|_| |_|___/\__\__,_|_|_|\___|_|
 EOF
 )
 
@@ -120,7 +119,7 @@ fi
 if [ ! -f installer/install/cyberpot.yml ] && [ ! -f cyberpot.yml ];
   then
     echo "### Now downloading CyberPot Ansible Installation Playbook ... "
-    wget -qO cyberpot.yml https://github.com/khulnasoft/cyberpot/raw/master/installer/install/cyberpot.yml
+    wget -qO cyberpot.yml https://raw.githubusercontent.com/khulnasoft/cyberpot/master/installer/install/cyberpot.yml
     myANSIBLE_CYBERPOT_PLAYBOOK="cyberpot.yml"
     echo
   else
@@ -172,10 +171,19 @@ echo "### (H)ive   - CyberPot Standard / HIVE installation."
 echo "###            Includes also everything you need for a distributed setup with sensors."
 echo "### (S)ensor - CyberPot Sensor installation."
 echo "###            Optimized for a distributed installation, without WebUI, Elasticsearch and Kibana."
+echo "### (L)LM    - CyberPot LLM installation."
+echo "###            Uses LLM based honeypots Beelzebub & Galah."
+echo "###            Requires Ollama (recommended) or ChatGPT subscription."
+echo "### M(i)ni   - CyberPot Mini installation."
+echo "###            Run 30+ honeypots with just a couple of honeypot daemons."
 echo "### (M)obile - CyberPot Mobile installation."
 echo "###            Includes everything to run CyberPot Mobile (available separately)."
+echo "### (T)arpit - CyberPot Tarpit installation."
+echo "###            Feed data endlessly to attackers, bots and scanners."
+echo "###            Also runs a Denial of Service Honeypot (ddospot)."
+echo
 while true; do
-  read -p "### Install Type? (h/s/m) " myCYBERPOT_TYPE
+  read -p "### Install Type? (h/s/l/i/m/t) " myCYBERPOT_TYPE
   case "${myCYBERPOT_TYPE}" in
     h|H)
       echo
@@ -192,11 +200,32 @@ while true; do
       myINFO="### Make sure to deploy SSH keys to this SENSOR and disable SSH password authentication.
 ### On HIVE run the cyberpot/deploy.sh script to join this SENSOR to the HIVE."
       break ;;
+    l|L)
+      echo
+      echo "### Installing CyberPot LLM."
+      myCYBERPOT_TYPE="HIVE"
+      cp ${HOME}/cyberpot/compose/llm.yml ${HOME}/cyberpot/docker-compose.yml
+      myINFO="Make sure to adjust the CyberPot config file (.env) for Ollama / ChatGPT settings."
+      break ;;
+    i|I)
+      echo
+      echo "### Installing CyberPot Mini."
+      myCYBERPOT_TYPE="HIVE"
+      cp ${HOME}/cyberpot/compose/mini.yml ${HOME}/cyberpot/docker-compose.yml
+      myINFO=""
+      break ;;
     m|M)
       echo
       echo "### Installing CyberPot Mobile."
       myCYBERPOT_TYPE="MOBILE"
       cp ${HOME}/cyberpot/compose/mobile.yml ${HOME}/cyberpot/docker-compose.yml
+      myINFO=""
+      break ;;
+    t|T)
+      echo
+      echo "### Installing CyberPot Tarpit."
+      myCYBERPOT_TYPE="HIVE"
+      cp ${HOME}/cyberpot/compose/tarpit.yml ${HOME}/cyberpot/docker-compose.yml
       myINFO=""
       break ;;
   esac

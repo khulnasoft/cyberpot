@@ -1,10 +1,11 @@
-FROM alpine:edge
+FROM alpine:3.20
 #
 # Include dist
 COPY dist/ /opt/cyberpot/
 #
-# Get and install dependencies & packages
-RUN apk --no-cache -U add \
+# Install packages
+RUN apk --no-cache -U upgrade && \
+    apk --no-cache -U add \
         aria2 \
         apache2-utils \
         bash \
@@ -18,7 +19,6 @@ RUN apk --no-cache -U add \
         grep \
         iproute2 \
         iptables \
-#        iptables-legacy \
         jq \
         logrotate \
         lsblk \
@@ -26,19 +26,20 @@ RUN apk --no-cache -U add \
         openssl \
         pigz \
         tar \
-        uuidgen && \
-    apk --no-cache -U add --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community \
-        yq && \
+        uuidgen \
+        yq-go && \
 #
-# Setup user
+# Setup user, logrotate permissions
     addgroup -g 2000 cyberpot && \
     adduser -S -s /bin/ash -u 2000 -D -g 2000 cyberpot && \
+    chmod 0600 /opt/cyberpot/etc/logrotate/logrotate.conf && \
 #
 # Clean up
     apk del --purge git && \
-    rm -rf /root/* /tmp/* && \
-    rm -rf /root/.cache /opt/cyberpot/.git && \
-    rm -rf /var/cache/apk/*
+    rm -rf /root/* /tmp/* \
+           /root/.cache \
+           /opt/cyberpot/.git \
+           /var/cache/apk/*
 #
 # Run cyberpotinit
 WORKDIR /opt/cyberpot

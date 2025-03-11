@@ -101,7 +101,7 @@
 # CyberPot - Install recommended, remove conflicting packages #
 ############################################################
 
-- name: CyberPot - Install recommended, remove conflicting packages
+- name: CyberPot - Install recommended, remove conflicting packages 
   hosts: all
   gather_facts: true
   become: true
@@ -145,35 +145,9 @@
         - "Raspbian"
         - "Ubuntu"
 
-    - name: Install exa (Debian, Raspbian, Ubuntu)
-      package:
-        name:
-          - exa
-        state: latest
-        update_cache: yes
-      register: exa_install_result
-      ignore_errors: yes
-      when: ansible_distribution in ["Debian", "Raspbian", "Ubuntu"]
-      tags:
-        - "Debian"
-        - "Raspbian"
-        - "Ubuntu"
-
-    - name: Install eza (if exa failed)
-      package:
-        name:
-          - eza
-        state: latest
-        update_cache: yes
-      when: exa_install_result is failed
-      tags:
-        - "Debian"
-        - "Raspbian"
-        - "Ubuntu"
-
     - name: Install grc from remote repo (AlmaLinux, Rocky)
       ansible.builtin.dnf:
-        name: "https://github.com/kriipke/grc/releases/download/1.13.8/grc-1.13.8-1.el7.noarch.rpm"
+        name: 'https://github.com/kriipke/grc/releases/download/1.13.8/grc-1.13.8-1.el7.noarch.rpm'
         disable_gpg_check: true
         state: present
       when: ansible_distribution in ["AlmaLinux", "Rocky"]
@@ -189,7 +163,6 @@
           - cracklib
           - curl
           - dnf-plugins-core
-          - exa
           - git
           - grc
           - htop
@@ -200,7 +173,6 @@
           - wget
         state: latest
         update_cache: yes
-      register: exa_install_result
       when: ansible_distribution in ["AlmaLinux", "Rocky"]
       tags:
         - "AlmaLinux"
@@ -225,7 +197,6 @@
           - cronie
           - curl
           - dnf-plugins-core
-          - exa
           - git
           - grc
           - htop
@@ -236,7 +207,6 @@
           - wget
         state: latest
         update_cache: yes
-      register: exa_install_result
       when: ansible_distribution in ["Fedora"]
       tags:
         - "Fedora"
@@ -264,7 +234,6 @@
           - ca-certificates
           - cracklib
           - curl
-          - exa
           - git
           - grc
           - htop
@@ -272,7 +241,6 @@
           - wget
         state: latest
         update_cache: yes
-      register: exa_install_result
       when: ansible_distribution in ["openSUSE Tumbleweed"]
       tags:
         - "openSUSE Tumbleweed"
@@ -356,7 +324,7 @@
       shell: |
         if [ "$(dnf repolist docker-ce-stable)" == "" ];
           then
-            dnf -y config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+            dnf -y config-manager addrepo --from-repofile=https://download.docker.com/linux/fedora/docker-ce.repo
         fi
       when: ansible_distribution in ["Fedora"]
       tags:
@@ -372,6 +340,7 @@
       tags:
         - "AlmaLinux"
         - "Rocky"
+
 
 #################################
 # CyberPot - Install Docker Engine #
@@ -402,11 +371,11 @@
     - name: Install Docker Engine packages (AlmaLinux, Debian, Fedora, Raspbian, Rocky, Ubuntu)
       package:
         name:
-          - docker-ce
-          - docker-ce-cli
+          - docker-ce 
+          - docker-ce-cli 
           - containerd.io
           - docker-buildx-plugin
-          - docker-compose-plugin
+          - docker-compose-plugin 
         state: latest
         update_cache: yes
       when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "Raspbian", "Rocky", "Ubuntu"]
@@ -466,6 +435,22 @@
         shell: /bin/false
         home: /nonexistent
         group: cyberpot
+      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
+      tags:
+        - "AlmaLinux"
+        - "Debian"
+        - "Fedora"
+        - "openSUSE Tumbleweed"
+        - "Raspbian"
+        - "Rocky"
+        - "Ubuntu"
+
+    - name: Ensure vm.max_map_count is set (All)
+      lineinfile:
+        path: /etc/sysctl.conf
+        line: "vm.max_map_count=262144"
+        state: present
+        create: yes
       when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
       tags:
         - "AlmaLinux"
@@ -563,8 +548,8 @@
     - name: Set SELinux config to permissive (AlmaLinux, Fedora, Rocky)
       lineinfile:
         path: /etc/selinux/config
-        regexp: "^SELINUX="
-        line: "SELINUX=permissive"
+        regexp: '^SELINUX='
+        line: 'SELINUX=permissive'
       when: ansible_distribution in ["AlmaLinux", "Fedora", "Rocky"]
       tags:
         - "AlmaLinux"
@@ -600,8 +585,8 @@
     - name: Modify DNSStubListener in resolved.conf (Fedora, Ubuntu)
       lineinfile:
         path: /etc/systemd/resolved.conf
-        regexp: "^.*DNSStubListener=.*"
-        line: "DNSStubListener=no"
+        regexp: '^.*DNSStubListener=.*'
+        line: 'DNSStubListener=no'
         state: present
       when: ansible_distribution in ["Fedora", "Ubuntu"]
       tags:
@@ -712,7 +697,7 @@
       when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
       failed_when: ansible_user_id == "root"
 
-    - name: Add aliases with exa (All)
+    - name: Add aliases (All)
       blockinfile:
         path: ~/.bashrc
         block: |
@@ -720,13 +705,10 @@
           alias dpsw='watch -c bash -ic dps'
           alias mi='micro'
           alias sudo='sudo '
-          alias ls='exa'
-          alias ll='exa -hlg'
-          alias la='exa -hlag'
         marker: "# {mark} ANSIBLE MANAGED BLOCK"
         insertafter: EOF
         state: present
-      when: exa_install_result is succeeded and ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
+      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
       tags:
         - "AlmaLinux"
         - "Debian"
@@ -736,30 +718,10 @@
         - "Rocky"
         - "Ubuntu"
 
-    - name: Add aliases with eza (Debian, Raspbian, Ubuntu)
-      blockinfile:
-        path: ~/.bashrc
-        block: |
-          alias dps='grc --colour=on docker ps -f status=running -f status=exited --format "table {{'{{'}}.Names{{'}}'}}\\t{{'{{'}}.Status{{'}}'}}\\t{{'{{'}}.Ports{{'}}'}}" | sort'
-          alias dpsw='watch -c bash -ic dps'
-          alias mi='micro'
-          alias sudo='sudo '
-          alias ls='eza'
-          alias ll='eza -hlg'
-          alias la='eza -hlag'
-        marker: "# {mark} ANSIBLE MANAGED BLOCK"
-        insertafter: EOF
-        state: present
-      when: exa_install_result is failed and ansible_distribution in ["Debian", "Raspbian", "Ubuntu"]
-      tags:
-        - "Debian"
-        - "Raspbian"
-        - "Ubuntu"
-
     - name: Clone / Update CyberPot repository (All)
       git:
-        repo: "https://github.com/khulnasoft/cyberpot"
-        dest: "/home/{{ ansible_user_id }}/cyberpot/"
+        repo: 'https://github.com/khulnasoft/cyberpot'
+        dest: '/home/{{ ansible_user_id }}/cyberpot/'
         version: master
         clone: yes
         update: no
@@ -769,7 +731,7 @@
       become: true
       user:
         name: "{{ ansible_user_id }}"
-        groups:
+        groups: 
           - docker
           - cyberpot
         append: yes
@@ -796,11 +758,11 @@
     - name: Install systemd service (All)
       become: true
       ansible.builtin.template:
-        src: "/home/{{ ansible_user_id }}/cyberpot/installer/install/cyberpot.service"
-        dest: "/etc/systemd/system/cyberpot.service"
+        src: '/home/{{ ansible_user_id }}/cyberpot/installer/install/cyberpot.service'
+        dest: '/etc/systemd/system/cyberpot.service'
         owner: root
         group: root
-        mode: "0755"
+        mode: '0755'
       notify: Reload systemd and enable service
       when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
 
@@ -838,6 +800,6 @@
         user: root
         minute: "{{ random_minute }}"
         hour: "{{ random_hour }}"
-        job: 'bash -c ''systemctl stop cyberpot.service && docker container prune -f; docker image prune -f; docker volume prune -f; /usr/sbin/shutdown -r +1 "CyberPot Daily Reboot"'''
+        job: "bash -c 'systemctl stop cyberpot.service && docker container prune -f; docker image prune -f; docker volume prune -f; /usr/sbin/shutdown -r +1 \"CyberPot Daily Reboot\"'"
         state: present
       when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]

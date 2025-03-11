@@ -8,7 +8,7 @@ if [ "$myWHOAMI" != "root" ]
     exit
 fi
 
-myCYBERPOTYMLFILE="/opt/cyberpot/etc/cyberpot.yml"
+myCYPERPOTYMLFILE="/opt/cyberpot/etc/cyberpot.yml"
 
 function fuGENERIC () {
 echo
@@ -19,7 +19,7 @@ read -p "Host URL: " myHOST
 read -p "Port: " myPORT
 read -p "Channel: " myCHANNEL
 echo "For generic providers set this to 'false'"
-echo "If you received a CA certficate mount it into the ewsposter container by modifying $myCYBERPOTYMLFILE"
+echo "If you received a CA certficate mount it into the ewsposter container by modifying $myCYPERPOTYMLFILE"
 read -p "TLS - 'false' or path to CA in container: " myCERT
 read -p "Ident: " myIDENT
 read -p "Secret: " mySECRET
@@ -75,14 +75,14 @@ function fuAPPLY () {
 echo "Now stopping CyberPot ..."
 systemctl stop cyberpot
 echo "Applying your settings to cyberpot.yml ... "
-sed --follow-symlinks -i "s/EWS_HPFEEDS_ENABLE.*/EWS_HPFEEDS_ENABLE=${myENABLE}/g" "$myCYBERPOTYMLFILE"
-sed --follow-symlinks -i "s/EWS_HPFEEDS_HOST.*/EWS_HPFEEDS_HOST=${myHOST}/g" "$myCYBERPOTYMLFILE"
-sed --follow-symlinks -i "s/EWS_HPFEEDS_PORT.*/EWS_HPFEEDS_PORT=${myPORT}/g" "$myCYBERPOTYMLFILE"
-sed --follow-symlinks -i "s/EWS_HPFEEDS_CHANNELS.*/EWS_HPFEEDS_CHANNELS=${myCHANNEL}/g" "$myCYBERPOTYMLFILE"
-sed --follow-symlinks -i "s#EWS_HPFEEDS_TLSCERT.*#EWS_HPFEEDS_TLSCERT=${myCERT}#g" "$myCYBERPOTYMLFILE"
-sed --follow-symlinks -i "s/EWS_HPFEEDS_IDENT.*/EWS_HPFEEDS_IDENT=${myIDENT}/g" "$myCYBERPOTYMLFILE"
-sed --follow-symlinks -i "s/EWS_HPFEEDS_SECRET.*/EWS_HPFEEDS_SECRET=${mySECRET}/g" "$myCYBERPOTYMLFILE"
-sed --follow-symlinks -i "s/EWS_HPFEEDS_FORMAT.*/EWS_HPFEEDS_FORMAT=${myFORMAT}/g" "$myCYBERPOTYMLFILE"
+sed --follow-symlinks -i "s/EWS_HPFEEDS_ENABLE.*/EWS_HPFEEDS_ENABLE=${myENABLE}/g" "$myCYPERPOTYMLFILE"
+sed --follow-symlinks -i "s/EWS_HPFEEDS_HOST.*/EWS_HPFEEDS_HOST=${myHOST}/g" "$myCYPERPOTYMLFILE"
+sed --follow-symlinks -i "s/EWS_HPFEEDS_PORT.*/EWS_HPFEEDS_PORT=${myPORT}/g" "$myCYPERPOTYMLFILE"
+sed --follow-symlinks -i "s/EWS_HPFEEDS_CHANNELS.*/EWS_HPFEEDS_CHANNELS=${myCHANNEL}/g" "$myCYPERPOTYMLFILE"
+sed --follow-symlinks -i "s#EWS_HPFEEDS_TLSCERT.*#EWS_HPFEEDS_TLSCERT=${myCERT}#g" "$myCYPERPOTYMLFILE"
+sed --follow-symlinks -i "s/EWS_HPFEEDS_IDENT.*/EWS_HPFEEDS_IDENT=${myIDENT}/g" "$myCYPERPOTYMLFILE"
+sed --follow-symlinks -i "s/EWS_HPFEEDS_SECRET.*/EWS_HPFEEDS_SECRET=${mySECRET}/g" "$myCYPERPOTYMLFILE"
+sed --follow-symlinks -i "s/EWS_HPFEEDS_FORMAT.*/EWS_HPFEEDS_FORMAT=${myFORMAT}/g" "$myCYPERPOTYMLFILE"
 echo "Now starting CyberPot ..."
 systemctl start cyberpot
 echo "You can always change or review your settings in /data/ews/conf/hpfeeds.cfg and apply changes by"

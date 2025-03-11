@@ -5,8 +5,8 @@ xpack.security.enabled: false
 xpack.security.transport.ssl.enabled: false
 xpack.security.http.ssl.enabled: false
 path:
-  logs: /data/elk/log
-  data: /data/elk/data
+    logs: /data/elk/log
+    data: /data/elk/data
 http.host: 0.0.0.0
 http.cors.enabled: true
 http.cors.allow-origin: "*"

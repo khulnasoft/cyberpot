@@ -2,24 +2,25 @@ networks:
   ddospot_local:
 
 services:
-  # Ddospot service
+
+# Ddospot service
   ddospot:
     build: .
     container_name: ddospot
     restart: always
-    #    cpu_count: 1
-    #    cpus: 0.25
+#    cpu_count: 1
+#    cpus: 0.25
     networks:
-      - ddospot_local
+     - ddospot_local
     ports:
-      - "19:19/udp"
-      - "53:53/udp"
-      - "123:123/udp"
-      #     - "161:161/udp"
-      - "1900:1900/udp"
-    image: "khulnasoft/ddospot:24.04"
+     - "19:19/udp"
+     - "53:53/udp"
+     - "123:123/udp"
+#     - "161:161/udp"
+     - "1900:1900/udp"
+    image: "dtagdevsec/ddospot:24.04"
     read_only: true
     volumes:
-      - $HOME/cyberpot/data/ddospot/log:/opt/ddospot/ddospot/logs
-      - $HOME/cyberpot/data/ddospot/bl:/opt/ddospot/ddospot/bl
-      - $HOME/cyberpot/data/ddospot/db:/opt/ddospot/ddospot/db
+     - $HOME/cyberpot/data/ddospot/log:/opt/ddospot/ddospot/logs
+     - $HOME/cyberpot/data/ddospot/bl:/opt/ddospot/ddospot/bl
+     - $HOME/cyberpot/data/ddospot/db:/opt/ddospot/ddospot/db

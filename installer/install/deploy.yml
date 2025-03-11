@@ -3,7 +3,7 @@
 # CyberPot Sensor Deployment #
 ###########################
 
-- name: CYBERPOT Sensor Deployment
+- name: CYPERPOT Sensor Deployment
   hosts: all
   vars:
     local_nginx_cert_path: "~/cyberpot/data/nginx/cert/nginx.crt"
@@ -17,7 +17,7 @@
       ansible.builtin.file:
         path: "{{ remote_cert_path | dirname }}"
         state: directory
-        mode: "770"
+        mode: '770'
 
     - name: Copy nginx.crt from local to remote host
       ansible.builtin.copy:
@@ -28,37 +28,37 @@
       ansible.builtin.command:
         cmd: "cp {{ remote_sensor_yml_path }} {{ remote_docker_compose_path }}"
 
-    - name: Update CYBERPOT_HIVE_USER in .env
+    - name: Update CYPERPOT_HIVE_USER in .env
       ansible.builtin.lineinfile:
         path: "{{ env_file_path }}"
-        regexp: "^CYBERPOT_HIVE_USER="
+        regexp: '^CYBERPOT_HIVE_USER='
         line: 'CYBERPOT_HIVE_USER={{ lookup("env", "myCYBERPOT_HIVE_USER") }}'
 
-    - name: Update CYBERPOT_HIVE_IP in .env
+    - name: Update CYPERPOT_HIVE_IP in .env
       ansible.builtin.lineinfile:
         path: "{{ env_file_path }}"
-        regexp: "^CYBERPOT_HIVE_IP="
+        regexp: '^CYBERPOT_HIVE_IP='
         line: 'CYBERPOT_HIVE_IP={{ lookup("env", "myCYBERPOT_HIVE_IP") }}'
 
-    - name: Ensure CYBERPOT_TYPE is set to SENSOR in .env
+    - name: Ensure CYPERPOT_TYPE is set to SENSOR in .env
       ansible.builtin.lineinfile:
         path: "{{ env_file_path }}"
-        regexp: "^CYBERPOT_TYPE="
-        line: "CYBERPOT_TYPE=SENSOR"
+        regexp: '^CYBERPOT_TYPE='
+        line: 'CYBERPOT_TYPE=SENSOR'
         create: yes
 
     - name: Ensure WEB_USER is empty in .env
       ansible.builtin.lineinfile:
         path: "{{ env_file_path }}"
-        regexp: "^WEB_USER="
-        line: "WEB_USER="
+        regexp: '^WEB_USER='
+        line: 'WEB_USER='
         create: yes
 
     - name: Ensure LS_WEB_USER is empty in .env
       ansible.builtin.lineinfile:
         path: "{{ env_file_path }}"
-        regexp: "^LS_WEB_USER="
-        line: "LS_WEB_USER="
+        regexp: '^LS_WEB_USER='
+        line: 'LS_WEB_USER='
         create: yes
 
     - name: Reboot the sensor

@@ -1,10 +1,11 @@
-FROM alpine:3.19
+FROM alpine:3.21
 #
 # Include dist
 COPY dist/ /root/dist/
 #
 # Install packages
-RUN apk -U --no-cache add \
+RUN apk --no-cache -U upgrade && \
+	apk --no-cache -U add \
 		build-base \
 		git \
 		libffi-dev \
@@ -21,13 +22,19 @@ RUN apk -U --no-cache add \
 		py3-requests \
 		py3-pip \
 		py3-setuptools \
-		py3-wheel && \
+		py3-wheel \
+		py3-xmltodict && \
 	pip3 install --break-system-packages --upgrade pip && \
-	pip3 install --break-system-packages --no-cache-dir configparser hpfeeds3 influxdb influxdb-client xmljson && \
-
+	pip3 install --break-system-packages --no-cache-dir \
+			configparser \
+			hpfeeds3 \
+			influxdb \
+			influxdb-client \
+			xmljson && \
 #
 # Setup ewsposter
-    git clone https://github.com/Cyb3rhq/ewsposter -b master /opt/ewsposter && \
+#    git clone https://github.com/khulnasoft/ewsposter -b V1.30.0 /opt/ewsposter && \
+	git clone https://github.com/khulnasoft/ewsposter /opt/ewsposter && \
     mkdir -p /opt/ewsposter/spool /opt/ewsposter/log && \
 #
 # Setup user and groups
@@ -46,7 +53,7 @@ RUN apk -U --no-cache add \
 		openssl-dev \
 		python3-dev \
 		py-setuptools && \
-    rm -rf /root/* /var/cache/apk/* /opt/ewsposter/.git
+	rm -rf /root/* /var/cache/apk/* /opt/ewsposter/.git
 #
 # Run ewsposter
 STOPSIGNAL SIGINT
