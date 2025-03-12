@@ -2,25 +2,22 @@ networks:
   mailoney_local:
 
 services:
-  # Mailoney service
+
+# Mailoney service
   mailoney:
     build: .
     container_name: mailoney
+    stdin_open: true
+    tty: true
     restart: always
-    environment:
-      - HPFEEDS_SERVER=
-      - HPFEEDS_IDENT=user
-      - HPFEEDS_SECRET=pass
-      - HPFEEDS_PORT=20000
-      - HPFEEDS_CHANNELPREFIX=prefix
-    #    cpu_count: 1
-    #    cpus: 0.25
+#    cpu_count: 1
+#    cpus: 0.25
     networks:
-      - mailoney_local
+     - mailoney_local
     ports:
-      - "25:25"
-      - "587:25"
+     - "25:25"
+     - "587:25"
     image: "khulnasoft/mailoney:24.04"
     read_only: true
     volumes:
-      - $HOME/cyberpot/data/mailoney/log:/opt/mailoney/logs
+     - $HOME/cyberpot/data/mailoney/log:/opt/mailoney/logs

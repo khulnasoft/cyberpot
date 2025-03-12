@@ -2,18 +2,19 @@ networks:
   redishoneypot_local:
 
 services:
-  # redishoneypot service
+
+# redishoneypot service
   redishoneypot:
     build: .
     container_name: redishoneypot
     restart: always
-    #    cpu_count: 1
-    #    cpus: 0.25
+#    cpu_count: 1
+#    cpus: 0.25
     networks:
-      - redishoneypot_local
+     - redishoneypot_local
     ports:
-      - "6379:6379"
+     - "6379:6379"    
     image: "khulnasoft/redishoneypot:24.04"
     read_only: true
     volumes:
-      - $HOME/cyberpot/data/redishoneypot/log:/var/log/redishoneypot
+     - $HOME/cyberpot/data/redishoneypot/log:/var/log/redishoneypot

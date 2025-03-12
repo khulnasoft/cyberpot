@@ -1,17 +1,13 @@
 ---
 name: Bug report for CyberPot 24.04.x
 about: Bug report for CyberPot 24.04.x
-title: ""
-labels: ""
-assignees: ""
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
-# Ask CyberPot Assistant
-
-- 🤖 Ask [CyberPot Assistant (beta)](https://chatgpt.com/g/g-67OJ5idsQ-cyberpot-assistant-beta) if you have not read the documentation yet and do not intent to do so (#1564)
-
 # Successfully raise an issue
-
 Before you post your issue make sure it has not been answered yet and provide **⚠️ BASIC SUPPORT INFORMATION** (as requested below) if you come to the conclusion it is a new issue.
 
 - 🔍 Use the [search function](https://github.com/khulnasoft/cyberpot/issues?utf8=%E2%9C%93&q=) first
@@ -22,7 +18,7 @@ Before you post your issue make sure it has not been answered yet and provide **
 
 # ⚠️ Basic support information (commands are expected to run as `root`)
 
-**We happily take the time to improve CyberPot and take care of things, but we need you to take the time to create an issue that provides us with all the information we need.**
+**We happily take the time to improve CyberPot and take care of things, but we need you to take the time to create an issue that provides us with all the information we need.** 
 
 - What OS are you CyberPot running on?
 - What is the version of the OS `lsb_release -a` and `uname -a`?
@@ -32,7 +28,7 @@ Before you post your issue make sure it has not been answered yet and provide **
 - How long has your installation been running?
   - If it is a fresh install consult the documentation first.
   - Most likely it is a port conflict or a remote dependency was unavailable.
-  - Retry a fresh installation and only open the issue if the error keeps coming up and is not resolved using the documentation as described [here](#how-to-raise-an-issue).
+  - Retry a fresh installation and only open the issue if the error keeps coming up and is not resolved using the documentation as described [here](#how-to-raise-an-issue).  
 - Did you install upgrades, packages or use the update script?
 - Did you modify any scripts or configs? If yes, please attach the changes.
 - Please provide a screenshot of `htop` and `docker stats`.

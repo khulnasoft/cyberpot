@@ -3,7 +3,7 @@
 echo """
 
 ##############################
-# CYBERPOT DTAG Data Submission #
+# CYPERPOT DTAG Data Submission #
 # Contact:                   #
 # cert@telekom.de            # 
 ##############################

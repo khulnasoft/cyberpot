@@ -1,4 +1,4 @@
-FROM alpine:3.16 AS builder
+FROM alpine:3.16 as builder
 #
 RUN apk -U add --no-cache \
             autoconf \

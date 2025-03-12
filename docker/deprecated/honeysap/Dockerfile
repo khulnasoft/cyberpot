@@ -15,7 +15,7 @@ RUN apk -U --no-cache add \
 #
 # Clone honeysap from git
 #    git clone --depth=1 https://github.com/SecureAuthCorp/HoneySAP /opt/honeysap && \
-    git clone --depth=1 https://github.com/Cyb3rhq/HoneySAP /opt/honeysap && \
+    git clone --depth=1 https://github.com/t3chn0m4g3/HoneySAP /opt/honeysap && \
     cd /opt/honeysap && \
     git checkout a3c355a710d399de9d543659a685effaa70e683d && \
     mkdir conf && \

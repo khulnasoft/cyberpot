@@ -1,9 +1,10 @@
 ---
 name: Feature request for CyberPot 24.04.x
 about: Suggest an idea for CyberPot 24.04.x
-title: ""
-labels: ""
-assignees: ""
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
 **Is your feature request related to a problem? Please describe.**

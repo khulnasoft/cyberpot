@@ -9,12 +9,12 @@ myWHITE="[0;0m"
 myBLUE="[0;34m"
 
 myUPDATER=$(cat << "EOF"
-   ______      __              ____        __ 
-  / ____/_  __/ /_  ___  _____/ __ \____  / /_
- / /   / / / / __ \/ _ \/ ___/ /_/ / __ \/ __/
-/ /___/ /_/ / /_/ /  __/ /  / ____/ /_/ / /_  
-\____/\__, /_.___/\___/_/  /_/    \____/\__/  
-     /____/                 
+ _____     ____       _     _   _           _       _
+|_   _|   |  _ \ ___ | |_  | | | |_ __   __| | __ _| |_ ___ _ __
+  | |_____| |_) / _ \| __| | | | | '_ \ / _` |/ _` | __/ _ \ '__|
+  | |_____|  __/ (_) | |_  | |_| | |_) | (_| | (_| | ||  __/ |
+  |_|     |_|   \___/ \__|  \___/| .__/ \__,_|\__,_|\__\___|_|
+                                 |_|
 EOF
 )
 
@@ -79,7 +79,7 @@ function fuSELFUPDATE () {
 
 function fuCHECK_VERSION () {
 	local myMINVERSION="24.04.0"
-	local myMASTERVERSION="24.04.0"
+	local myMASTERVERSION="24.04.1"
 	echo
 	echo "### Checking for version tag ..."
 	if [ -f "version" ];
@@ -100,7 +100,7 @@ function fuCHECK_VERSION () {
 }
 
 # Stop CyberPot to avoid race conditions with running containers with regard to the current CyberPot config
-function fuSTOP_CYBERPOT () {
+function fuSTOP_CYPERPOT () {
 	echo
 	echo "### Need to stop CyberPot ..."
 	echo -n "###### $myBLUE Now stopping CyberPot.$myWHITE "
@@ -167,6 +167,8 @@ function fuUPDATER () {
 	fuPULLIMAGES
 	fuREMOVEOLDIMAGES "khulnasoft/*:dev"
 	fuREMOVEOLDIMAGES "ghcr.io/khulnasoft/*:dev"
+	fuREMOVEOLDIMAGES "khulnasoft/*:24.04"
+	fuREMOVEOLDIMAGES "ghcr.io/khulnasoft/*:24.04"
 	echo
 	echo "### If you made changes to docker-compose.yml please ensure to add them again."
 	echo "### We stored the previous version as backup in $myARCHIVE."
@@ -207,7 +209,7 @@ fi
 
 fuCHECK_VERSION
 fuCHECKINET "https://index.docker.io https://github.com"
-fuSTOP_CYBERPOT
+fuSTOP_CYPERPOT
 fuBACKUP
 fuSELFUPDATE "$0" "$@"
 fuUPDATER

@@ -68,8 +68,8 @@ if [ "$CYBERPOT_TYPE" != "SENSOR" ];
     echo
 
     # Index Management is happening through ILM, but we need to put CyberPot ILM setting on ES.
-    myCYBERPOTILM=$(curl -s -XGET "http://elasticsearch:9200/_ilm/policy/cyberpot" | grep "Lifecycle policy not found: cyberpot" -c)
-    if [ "$myCYBERPOTILM" == "1" ];
+    myCYPERPOTILM=$(curl -s -XGET "http://elasticsearch:9200/_ilm/policy/cyberpot" | grep "Lifecycle policy not found: cyberpot" -c)
+    if [ "$myCYPERPOTILM" == "1" ];
       then
         echo "CyberPot ILM template not found on ES, putting it on ES now."
         curl -XPUT "http://elasticsearch:9200/_ilm/policy/cyberpot" -H 'Content-Type: application/json' -d'
@@ -101,4 +101,8 @@ if [ "$CYBERPOT_TYPE" != "SENSOR" ];
 fi
 echo
 
+ARCH=$(arch)
+if [ "$ARCH" = "aarch64" ]; then
+  export _JAVA_OPTIONS="-XX:UseSVE=0";
+fi
 exec /usr/share/logstash/bin/logstash --config.reload.automatic

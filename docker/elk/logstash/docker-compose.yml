@@ -1,19 +1,20 @@
 services:
-  ## Logstash service
+
+## Logstash service
   logstash:
     build: .
     container_name: logstash
     restart: always
-    #    environment:
-    #     - LS_JAVA_OPTS=-Xms2048m -Xmx2048m
-    #    depends_on:
-    #      elasticsearch:
-    #        condition: service_healthy
+#    environment:
+#     - LS_JAVA_OPTS=-Xms2048m -Xmx2048m
+#    depends_on:
+#      elasticsearch:
+#        condition: service_healthy
     ports:
-      - "127.0.0.1:64305:64305"
-    image: "khulnasoft/logstash:24.04"
+     - "127.0.0.1:64305:64305"
+    image: "ghcr.io/khulnasoft/logstash:24.04.1"
     volumes:
-      - $HOME/cyberpot/data:/data
+     - $HOME/cyberpot/data:/data
 #     - /$HOME/cyberpot/docker/elk/logstash/dist/logstash.conf:/etc/logstash/conf.d/logstash.conf
 #     - /$HOME/cyberpot/docker/elk/logstash/dist/http.conf:/etc/logstash/conf.d/http.conf
 #     - /$HOME/cyberpot/docker/elk/logstash/dist/logstash.yml:/etc/logstash/conf.d/logstash.yml
