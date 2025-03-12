@@ -177,7 +177,7 @@ echo $services | tr ' ' '\n' | xargs -I {} -P $PARALLELBUILDS bash -c '
     if '$NO_CACHE'; then \
         build_cmd="$build_cmd --no-cache"; \
     fi && \
-    eval "$build_cmd 2>&1 > log/{}.log" && \
+    eval "$build_cmd > log/{}.log 2>&1" && \
     echo -e "Image {}: ['$GREEN'OK'$NC']" || \
     echo -e "Image {}: ['$RED'FAIL'$NC']"
 '
