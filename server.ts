@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 dotenv.config();
@@ -69,6 +70,11 @@ let blackholedIPs: string[] = ['185.220.101.5', '193.142.146.210', '45.155.205.1
 
 // Generating realistic sample attack telemetry
 const countriesList = [
+  { name: 'Bangladesh', code: 'BD', lat: 23.8103, lng: 90.4125, city: 'Dhaka' },
+  { name: 'Bangladesh', code: 'BD', lat: 22.3569, lng: 91.7832, city: 'Chittagong' },
+  { name: 'Bangladesh', code: 'BD', lat: 24.8949, lng: 91.8687, city: 'Sylhet' },
+  { name: 'Bangladesh', code: 'BD', lat: 24.3745, lng: 88.6042, city: 'Rajshahi' },
+  { name: 'Bangladesh', code: 'BD', lat: 22.8456, lng: 89.5403, city: 'Khulna' },
   { name: 'China', code: 'CN', lat: 35.8617, lng: 104.1954, city: 'Beijing' },
   { name: 'Russia', code: 'RU', lat: 61.524, lng: 105.3188, city: 'Moscow' },
   { name: 'United States', code: 'US', lat: 37.0902, lng: -95.7129, city: 'Dallas' },
@@ -311,39 +317,9 @@ if (process.env.NODE_ENV !== 'production') {
   const { createServer: createViteServer } = await import('vite');
   const vite = await createViteServer({
     server: { middlewareMode: true },
-    appType: 'custom',
+    appType: 'spa',
   });
   app.use(vite.middlewares);
-  app.use('*', async (req, res, next) => {
-    const url = req.originalUrl;
-    try {
-      let template = await vite.transformIndexHtml(
-        url,
-        `<!DOCTYPE html>
-        <html lang="en" class="dark">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>CyberPot Multi-Honeypot Security Platform</title>
-            <meta name="description" content="CyberPot is an all-in-one Honeypot system & Security Operations Dashboard featuring real-time Attack Map, Kibana analytics, Elasticvue index browser, SpiderFoot OSINT recon, CyberChef utility suite, and live honeypot control.">
-            <meta property="og:title" content="CyberPot Multi-Honeypot Security Platform">
-            <meta property="og:description" content="CyberPot is an all-in-one Honeypot system & Security Operations Dashboard featuring real-time Attack Map, Kibana analytics, Elasticvue index browser, SpiderFoot OSINT recon, CyberChef utility suite, and live honeypot control.">
-            <link rel="preconnect" href="https://fonts.googleapis.com">
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-            <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        </head>
-        <body class="bg-black text-gray-100 font-sans antialiased overflow-x-hidden selection:bg-pink-600 selection:text-white">
-            <div id="root"></div>
-            <script type="module" src="/src/main.tsx"></script>
-        </body>
-        </html>`
-      );
-      res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
-    } catch (e) {
-      vite.ssrFixStacktrace(e as Error);
-      next(e);
-    }
-  });
 } else {
   // Production Static file serving
   app.use(express.static(path.join(__dirname, 'dist')));

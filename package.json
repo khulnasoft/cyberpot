@@ -8,12 +8,14 @@
     "start": "node server.ts"
   },
   "dependencies": {
+    "@types/three": "^0.186.0",
     "cors": "^2.8.6",
     "dotenv": "^18.0.4",
     "express": "^5.2.1",
     "lucide-react": "^1.48.0",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",

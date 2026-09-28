@@ -3,6 +3,9 @@ import { Navbar } from './components/Navbar';
 import { ParticleBackground } from './components/ParticleBackground';
 import { PortalHome } from './components/PortalHome';
 import { AttackMap } from './components/AttackMap';
+import { ThreeDThreatMap } from './components/ThreeDThreatMap';
+import { BangladeshThreatMap } from './components/BangladeshThreatMap';
+import { CountryThreats } from './components/CountryThreats';
 import { KibanaDashboard } from './components/KibanaDashboard';
 import { ElasticvueExplorer } from './components/ElasticvueExplorer';
 import { SpiderFootOsint } from './components/SpiderFootOsint';
@@ -24,11 +27,11 @@ export function App() {
         fetch('/api/status'),
         fetch('/api/attacks?limit=150'),
       ]);
-      if (statusRes.ok) {
+      if (statusRes.ok && statusRes.headers.get('content-type')?.includes('application/json')) {
         const sData = await statusRes.json();
         setStatus(sData);
       }
-      if (attacksRes.ok) {
+      if (attacksRes.ok && attacksRes.headers.get('content-type')?.includes('application/json')) {
         const aData = await attacksRes.json();
         setAttacks(aData.events || []);
       }
@@ -85,7 +88,25 @@ export function App() {
             recentAttacks={attacks}
           />
         )}
+        {currentTab === 'bdmap' && (
+          <BangladeshThreatMap
+            attacks={attacks}
+            onOpenBlackholeModal={() => setBlackholeModalOpen(true)}
+          />
+        )}
+        {currentTab === '3dmap' && (
+          <ThreeDThreatMap
+            attacks={attacks}
+            onOpenBlackholeModal={() => setBlackholeModalOpen(true)}
+          />
+        )}
         {currentTab === 'map' && <AttackMap attacks={attacks} />}
+        {currentTab === 'countries' && (
+          <CountryThreats
+            attacks={attacks}
+            onOpenBlackholeModal={() => setBlackholeModalOpen(true)}
+          />
+        )}
         {currentTab === 'kibana' && <KibanaDashboard attacks={attacks} />}
         {currentTab === 'elasticvue' && <ElasticvueExplorer />}
         {currentTab === 'spiderfoot' && <SpiderFootOsint />}

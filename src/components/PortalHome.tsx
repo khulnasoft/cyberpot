@@ -110,16 +110,68 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
           </div>
           <div className="space-y-3">
             <button
+              onClick={() => setCurrentTab('bdmap')}
+              className="w-full flex items-center justify-between p-3.5 rounded-xl bg-emerald-950/40 hover:bg-emerald-900/40 border border-emerald-500/50 hover:border-emerald-400 transition-all text-left group/btn shadow-lg shadow-emerald-950/30"
+            >
+              <div className="flex items-center gap-3">
+                <div className="text-2xl">🇧🇩</div>
+                <div>
+                  <div className="font-russo text-white text-lg group-hover/btn:text-emerald-400 transition-colors flex items-center gap-2">
+                    Bangladesh Cyber Threat Map
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500 text-black font-bold">CIRT LIVE</span>
+                  </div>
+                  <div className="text-xs text-gray-400 font-mono">National defense telemetry & 8 Divisional Sensor Hubs</div>
+                </div>
+              </div>
+              <ArrowUpRight className="w-5 h-5 text-emerald-500 group-hover/btn:text-emerald-300 transition-colors" />
+            </button>
+
+            <button
+              onClick={() => setCurrentTab('3dmap')}
+              className="w-full flex items-center justify-between p-3.5 rounded-xl bg-gray-900/60 hover:bg-[#e20074]/20 border border-[#e20074]/40 hover:border-[#e20074] transition-all text-left group/btn shadow-md shadow-[#e20074]/10"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-[#e20074]/20 text-[#e20074] animate-pulse">
+                  <Globe className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-russo text-white text-lg group-hover/btn:text-[#e20074] transition-colors flex items-center gap-2">
+                    3D Cyber Threat Globe
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#e20074] text-white">3D WebGL</span>
+                  </div>
+                  <div className="text-xs text-gray-400 font-mono">Interactive 3D globe with live attack arcs</div>
+                </div>
+              </div>
+              <ArrowUpRight className="w-5 h-5 text-gray-500 group-hover/btn:text-[#e20074] transition-colors" />
+            </button>
+
+            <button
+              onClick={() => setCurrentTab('countries')}
+              className="w-full flex items-center justify-between p-3.5 rounded-xl bg-gray-900/60 hover:bg-[#e20074]/20 border border-gray-800 hover:border-[#e20074]/50 transition-all text-left group/btn"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
+                  <Globe className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-russo text-white text-lg group-hover/btn:text-[#e20074] transition-colors">Country Intelligence</div>
+                  <div className="text-xs text-gray-400 font-mono">Geopolitical attack breakdown & APT attribution</div>
+                </div>
+              </div>
+              <ArrowUpRight className="w-5 h-5 text-gray-500 group-hover/btn:text-[#e20074] transition-colors" />
+            </button>
+
+            <button
               onClick={() => setCurrentTab('map')}
               className="w-full flex items-center justify-between p-3.5 rounded-xl bg-gray-900/60 hover:bg-[#e20074]/20 border border-gray-800 hover:border-[#e20074]/50 transition-all text-left group/btn"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[#e20074]/20 text-[#e20074]">
+                <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400">
                   <Globe className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-russo text-white text-lg group-hover/btn:text-[#e20074] transition-colors">Attack Map</div>
-                  <div className="text-xs text-gray-400 font-mono">Real-time global attack vector visualization</div>
+                  <div className="font-russo text-white text-lg group-hover/btn:text-[#e20074] transition-colors">2D Tactical Map</div>
+                  <div className="text-xs text-gray-400 font-mono">Real-time global 2D attack vector projection</div>
                 </div>
               </div>
               <ArrowUpRight className="w-5 h-5 text-gray-500 group-hover/btn:text-[#e20074] transition-colors" />
