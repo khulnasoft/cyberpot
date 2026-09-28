@@ -1,0 +1,6 @@
+{
+  "name": "CyberPot Multi-Honeypot Security Platform",
+  "description": "CyberPot is an all-in-one Honeypot system & Security Operations Dashboard featuring real-time Attack Map, Kibana analytics, Elasticvue index browser, SpiderFoot OSINT recon, CyberChef utility suite, and live honeypot control.",
+  "request_frame_permissions": [],
+  "capabilities": []
+}
