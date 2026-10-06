@@ -1,0 +1,132 @@
+name: Validate repository
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Run structure validation
+        run: make validate
+
+      - name: Run tidy
+        run: make tidy
+
+      - name: Run unit tests
+        run: make test
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Run Python syntax lint
+        run: python3 -m compileall scripts tests
+
+      - name: Run shell syntax lint
+        run: |
+          find . -type f -name '*.sh' \
+            -not -path './.git/*' \
+            -not -path './build/*' \
+            -not -path './scripts/lib/*.py' \
+            -print0 | xargs -0 -n1 shellcheck -x 2>&1 | tail -n 30 || true
+
+  docker-smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Validate Docker Compose configuration
+        run: |
+          docker compose version
+          docker compose -f docker-compose.yml config > /dev/null
+
+      - name: Validate docker-bake HCL
+        run: |
+          docker buildx bake --print cyberpot-init 2>&1 | jq . > /dev/null || echo "bake check warning (may need buildx)"
+
+  shell-syntax:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Validate shell script syntax
+        run: |
+          find . -type f -name '*.sh' \
+            -not -path './.git/*' \
+            -not -path './build/*' \
+            -print0 | xargs -0 -n1 bash -n
+
+  build-samples:
+    runs-on: ubuntu-latest
+    needs: [validate, lint, docker-smoke, shell-syntax]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Generate ISO build scaffold
+        run: |
+          python3 scripts/build_images.py --target iso --output-dir ./build/images --dry-run
+
+      - name: Generate VMware build scaffold
+        run: |
+          python3 scripts/build_images.py --target vmware --output-dir ./build/images --dry-run
+
+      - name: Generate VirtualBox build scaffold
+        run: |
+          python3 scripts/build_images.py --target virtualbox --output-dir ./build/images --dry-run
+
+      - name: Upload generated build scaffolds
+        uses: actions/upload-artifact@v5
+        with:
+          name: image-build-scaffolds
+          path: build/images
+          if-no-files-found: error

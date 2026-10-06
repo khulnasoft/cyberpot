@@ -1,0 +1,29 @@
+name: Link Checker
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # daily at 2 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Run lychee link checker
+        uses: lycheeverse/lychee-action@v2.8.0
+        with:
+          args: >
+            --verbose
+            --retry-wait-time 10
+            --max-retries 3
+            --exclude https://www.raspberrypi.com/
+            --exclude https://www.vmware.com/
+            README.md
+        continue-on-error: true

@@ -1,0 +1,104 @@
+# config/defaults.yml - Single source of truth for CyberPot defaults
+# Used by install.sh, compose/*.yml (via yq), docker-bake.hcl, and scripts
+# This file is the canonical shared config layer to reduce drift between installer and deployment templates
+
+# Versioning (single source: version file is ground truth, this mirrors it for bake/compose)
+version: "24.04.2"
+
+# Registry configuration (canonical order: bot -> docker.io -> ghcr.io)
+registry:
+  # Primary for pull fallback (fast check order)
+  order:
+    - "ghcr.io/khulnasoft-bot"
+    - "docker.io/khulnasoft"
+    - "ghcr.io/khulnasoft"
+  # Default repo for CYBERPOT_REPO (explicit docker.io)
+  default: "docker.io/khulnasoft"
+  ghcr: "ghcr.io/khulnasoft"
+  dockerhub: "docker.io/khulnasoft"
+  bot: "ghcr.io/khulnasoft-bot"
+
+# Pull policy
+pull_policy: "always"  # always | missing | never | build
+
+# Compose defaults
+compose:
+  file: "./docker-compose.yml"
+  env_file: "./.env"
+  data_path: "./data"
+  pull_policy: "always"
+
+# Builder
+builder:
+  name: "mybuilder"
+  platforms:
+    - "linux/amd64"
+    - "linux/arm64"
+  cache:
+    from: "type=gha"
+    to: "type=gha,mode=max"
+
+# Env schema validation (for scripts/validate_repo.py and entrypoint.sh)
+env_schema:
+  required:
+    - CYBERPOT_REPO
+    - CYBERPOT_VERSION
+    - CYBERPOT_PULL_POLICY
+    - CYBERPOT_TYPE
+    - CYBERPOT_OSTYPE
+  allowed_values:
+    CYBERPOT_TYPE: ["HIVE", "SENSOR", "MOBILE"]
+    CYBERPOT_OSTYPE: ["linux", "mac", "win"]
+    CYBERPOT_PULL_POLICY: ["always", "missing", "never", "build"]
+    CYBERPOT_BLACKHOLE: ["ENABLED", "DISABLED"]
+    CYBERPOT_PERSISTENCE: ["on", "off"]
+
+# Docker images (47 legit, from generate_docker_strategy.py)
+# This list is kept in sync via: python scripts/generate_docker_strategy.py > /tmp/strategy.json
+# and scripts/check_dangling_dockerfiles.py
+images:
+  # Honeypots
+  - adbhoney
+  - beelzebub
+  - ciscoasa
+  - citrixhoneypot
+  - conpot
+  - cowrie
+  - ddospot
+  - dicompot
+  - dionaea
+  - elasticpot
+  - endlessh
+  - fatt
+  - galah
+  - glutton
+  - go-pot
+  - h0neytr4p
+  - hellpot
+  - heralding
+  - honeyaml
+  - honeytrap
+  - ipphoney
+  - log4pot
+  - mailoney
+  - medpot
+  - miniprint
+  - p0f
+  - redishoneypot
+  - sentrypeer
+  - spiderfoot
+  - suricata
+  - tanner
+  - wordpot
+  # Tools / ELK
+  - cyberpot-init
+  - dot-init
+  - elasticsearch
+  - kibana
+  - logstash
+  - map
+  - nginx
+  - ewsposter
+  - redis
+  - phpox
+  - snare

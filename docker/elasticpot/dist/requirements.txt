@@ -1,6 +1,0 @@
-configparser>=3.5.0
-couchdb
-hpfeeds>=3.0.0
-influxdb
-pymongo
-rethinkdb>=2.4

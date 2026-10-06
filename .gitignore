@@ -1,0 +1,21 @@
+# Ignore data folder
+data/
+_data/
+**/.DS_Store
+.idea
+install_cyberpot.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Build artifacts
+/dist/
+/build/
+
+# Env files (requested)
+.env
+.env.example

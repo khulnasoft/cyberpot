@@ -1,0 +1,45 @@
+name: PR Labeler
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/labeler@v5
+        with:
+          configuration-path: .github/labeler.yml
+          sync-labels: false
+
+  specify:
+    runs-on: ubuntu-latest
+    needs: label
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Check PR has specify label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          labels=$(gh pr view "$NUMBER" --repo "$GH_REPO" --json labels --jq '.labels[].name')
+          echo "Current labels:"
+          echo "$labels"
+          # Require at least one pr:* label to specify type
+          if ! grep -q "^pr:" <<<"$labels"; then
+            echo "::warning::PR should have a 'pr:*' label to specify type (pr:bug, pr:feature, etc.)"
+            # Optionally fail: exit 1
+          fi
+          # Require at least one area:* label
+          if ! grep -q "^area:" <<<"$labels"; then
+            echo "::warning::PR should have an 'area:*' label to specify area"
+          fi

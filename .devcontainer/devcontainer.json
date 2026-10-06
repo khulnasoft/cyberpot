@@ -1,0 +1,21 @@
+{
+  "name": "cyberpot-dev",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-yaml"
+      ]
+    }
+  },
+  "postCreateCommand": "python -m pip install --upgrade pip && python -m pip install pyyaml && sudo apt-get update && sudo apt-get install -y make shellcheck",
+  "remoteUser": "vscode"
+}

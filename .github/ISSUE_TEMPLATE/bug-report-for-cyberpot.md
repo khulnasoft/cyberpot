@@ -1,6 +1,6 @@
 ---
-name: General issue for CyberPot 24.04.x
-about: General issue for CyberPot 24.04.x
+name: Bug report for CyberPot 24.04.x
+about: Bug report for CyberPot 24.04.x
 title: ''
 labels: ''
 assignees: ''

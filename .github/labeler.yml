@@ -1,0 +1,42 @@
+# Labeler mapping for PRs — auto-assign area labels based on changed files
+# https://github.com/marketplace/actions/labeler
+
+"area:docker":
+  - docker/**
+
+"area:compose":
+  - compose/**
+  - docker-compose.yml
+
+"area:installer":
+  - installer/**
+  - install.sh
+  - update.sh
+  - uninstall.sh
+
+"area:scripts":
+  - scripts/**
+
+"area:docs":
+  - doc/**
+  - README.md
+  - CHANGELOG.md
+  - SECURITY.md
+
+"area:elk":
+  - docker/elk/**
+  - docker/ewsposter/**
+
+"area:devcontainer":
+  - .devcontainer/**
+
+"pr:ci":
+  - .github/workflows/**
+
+"pr:documentation":
+  - "*.md"
+  - "doc/**"
+
+"pr:dependencies":
+  - "docker/**/Dockerfile"
+  - ".devcontainer/Dockerfile"
