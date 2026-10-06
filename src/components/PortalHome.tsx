@@ -12,7 +12,9 @@ import {
   Server,
   Zap,
   ArrowUpRight,
-  ShieldAlert
+  ShieldAlert,
+  Bell,
+  Sliders
 } from 'lucide-react';
 import { SystemStatus, AttackLog } from '../types';
 
@@ -109,6 +111,44 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
             <h2 className="font-russo text-xl text-white tracking-wider">CYBERPOT TOOLS</h2>
           </div>
           <div className="space-y-3">
+            <button
+              onClick={() => setCurrentTab('analysis')}
+              className="w-full flex items-center justify-between p-3.5 rounded-xl bg-[#e20074]/20 hover:bg-[#e20074]/30 border border-[#e20074]/50 hover:border-[#e20074] transition-all text-left group/btn shadow-lg shadow-[#e20074]/20"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-[#e20074]/30 text-[#e20074]">
+                  <BarChart3 className="w-5 h-5 animate-pulse" />
+                </div>
+                <div>
+                  <div className="font-russo text-white text-lg group-hover/btn:text-[#e20074] transition-colors flex items-center gap-2">
+                    Threat Analysis & Vectors
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#e20074] text-white font-bold">BAR CHARTS</span>
+                  </div>
+                  <div className="text-xs text-gray-400 font-mono">Visual attack vector frequencies & payload MITRE breakdown</div>
+                </div>
+              </div>
+              <ArrowUpRight className="w-5 h-5 text-[#e20074] group-hover/btn:text-white transition-colors" />
+            </button>
+
+            <button
+              onClick={() => setCurrentTab('settings')}
+              className="w-full flex items-center justify-between p-3.5 rounded-xl bg-purple-950/40 hover:bg-purple-900/40 border border-purple-500/50 hover:border-purple-400 transition-all text-left group/btn shadow-lg shadow-purple-950/30"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-purple-500/20 text-purple-400">
+                  <Bell className="w-5 h-5 animate-pulse" />
+                </div>
+                <div>
+                  <div className="font-russo text-white text-lg group-hover/btn:text-purple-300 transition-colors flex items-center gap-2">
+                    Attack Frequency Thresholds
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-600 text-white font-bold">ALERTS</span>
+                  </div>
+                  <div className="text-xs text-gray-400 font-mono">Set attempts/min alert rules for Email, Browser, & Auto-Blackhole</div>
+                </div>
+              </div>
+              <ArrowUpRight className="w-5 h-5 text-purple-400 group-hover/btn:text-purple-300 transition-colors" />
+            </button>
+
             <button
               onClick={() => setCurrentTab('bdmap')}
               className="w-full flex items-center justify-between p-3.5 rounded-xl bg-emerald-950/40 hover:bg-emerald-900/40 border border-emerald-500/50 hover:border-emerald-400 transition-all text-left group/btn shadow-lg shadow-emerald-950/30"

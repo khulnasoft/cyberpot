@@ -10,7 +10,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express();
+export const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 app.use(cors());
@@ -139,7 +139,7 @@ for (let i = 0; i < 150; i++) {
 }
 
 // Generate new attack every few seconds in memory
-setInterval(() => {
+const attackInterval = setInterval(() => {
   const c = countriesList[Math.floor(Math.random() * countriesList.length)];
   const hp = honeypots[Math.floor(Math.random() * (honeypots.length - 1))];
   const ipPart1 = Math.floor(Math.random() * 180) + 20;
@@ -177,6 +177,10 @@ setInterval(() => {
     attackLogs.pop();
   }
 }, 3000);
+
+if (attackInterval.unref) {
+  attackInterval.unref();
+}
 
 // API Endpoints
 app.get('/api/status', (_req, res) => {
@@ -312,22 +316,221 @@ app.get('/api/indices', (_req, res) => {
   res.json({ clusterHealth: 'green', nodeCount: 1, totalDocs: 2880900, totalStorage: '1.75 GB', indices });
 });
 
-// Vite Middleware for Dev Mode
-if (process.env.NODE_ENV !== 'production') {
-  const { createServer: createViteServer } = await import('vite');
-  const vite = await createViteServer({
-    server: { middlewareMode: true },
-    appType: 'spa',
+// Threshold Rules State
+let thresholdRules = [
+  {
+    id: 'rule-cowrie-surge',
+    name: 'SSH Brute-Force Rate Limit Alert',
+    honeypotId: 'cowrie',
+    thresholdLimit: 25,
+    timeWindowMinutes: 1,
+    notifyEmail: true,
+    emailAddress: 'bdkhulnasoft@gmail.com',
+    notifyBrowser: true,
+    autoBlackhole: false,
+    notifyWebhook: true,
+    webhookUrl: 'https://hooks.slack.com/services/T000/B000/XXXXX',
+    enabled: true,
+    createdTime: new Date(Date.now() - 86400000 * 3).toISOString(),
+    triggerCount: 14,
+    severity: 'HIGH' as const
+  },
+  {
+    id: 'rule-tanner-exploit',
+    name: 'Tanner Web App RCE & Scanner Burst',
+    honeypotId: 'tanner',
+    thresholdLimit: 30,
+    timeWindowMinutes: 1,
+    notifyEmail: true,
+    emailAddress: 'bdkhulnasoft@gmail.com',
+    notifyBrowser: true,
+    autoBlackhole: true,
+    notifyWebhook: false,
+    enabled: true,
+    createdTime: new Date(Date.now() - 86400000 * 2).toISOString(),
+    triggerCount: 8,
+    severity: 'CRITICAL' as const
+  },
+  {
+    id: 'rule-global-ddos',
+    name: 'All Nodes High Frequency Attack Flood',
+    honeypotId: 'all',
+    thresholdLimit: 75,
+    timeWindowMinutes: 1,
+    notifyEmail: true,
+    emailAddress: 'bdkhulnasoft@gmail.com',
+    notifyBrowser: true,
+    autoBlackhole: true,
+    notifyWebhook: true,
+    webhookUrl: 'https://discord.com/api/webhooks/123456/xyz',
+    enabled: true,
+    createdTime: new Date(Date.now() - 86400000 * 5).toISOString(),
+    triggerCount: 22,
+    severity: 'CRITICAL' as const
+  }
+];
+
+let triggeredAlerts: any[] = [
+  {
+    id: 'trig-101',
+    ruleId: 'rule-cowrie-surge',
+    ruleName: 'SSH Brute-Force Rate Limit Alert',
+    honeypotId: 'cowrie',
+    honeypotName: 'Cowrie (SSH / Telnet)',
+    currentAttempts: 34,
+    thresholdLimit: 25,
+    timestamp: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
+    actionsTaken: ['EMAIL_DISPATCHED', 'BROWSER_ALERT_FIRED', 'WEBHOOK_POSTED'],
+    severity: 'HIGH'
+  },
+  {
+    id: 'trig-102',
+    ruleId: 'rule-tanner-exploit',
+    ruleName: 'Tanner Web App RCE & Scanner Burst',
+    honeypotId: 'tanner',
+    honeypotName: 'Tanner (Web Application)',
+    currentAttempts: 42,
+    thresholdLimit: 30,
+    timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+    actionsTaken: ['EMAIL_DISPATCHED', 'BROWSER_ALERT_FIRED', 'AUTO_BLACKHOLE_APPLIED'],
+    severity: 'CRITICAL'
+  }
+];
+
+// Helper to compute live attack rates (attempts in last 60 seconds)
+function computeActiveRates() {
+  const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
+  const recentLogs = attackLogs.filter(l => l.timestamp >= oneMinuteAgo);
+  
+  const rates: Record<string, number> = { all: recentLogs.length };
+  
+  honeypots.forEach(hp => {
+    rates[hp.id] = recentLogs.filter(l => l.service === hp.id).length;
   });
-  app.use(vite.middlewares);
-} else {
-  // Production Static file serving
+
+  return rates;
+}
+
+app.get('/api/settings/thresholds', (_req, res) => {
+  res.json({
+    rules: thresholdRules,
+    alerts: triggeredAlerts,
+    activeRates: computeActiveRates()
+  });
+});
+
+app.post('/api/settings/thresholds', (req, res) => {
+  const ruleData = req.body;
+  if (!ruleData.name || !ruleData.thresholdLimit) {
+    return res.status(400).json({ error: 'Rule name and threshold limit are required' });
+  }
+
+  const existingIndex = thresholdRules.findIndex(r => r.id === ruleData.id);
+  if (existingIndex >= 0) {
+    thresholdRules[existingIndex] = { ...thresholdRules[existingIndex], ...ruleData };
+  } else {
+    const newRule = {
+      id: `rule-${Date.now()}`,
+      name: ruleData.name,
+      honeypotId: ruleData.honeypotId || 'all',
+      thresholdLimit: Number(ruleData.thresholdLimit) || 20,
+      timeWindowMinutes: Number(ruleData.timeWindowMinutes) || 1,
+      notifyEmail: Boolean(ruleData.notifyEmail),
+      emailAddress: ruleData.emailAddress || 'bdkhulnasoft@gmail.com',
+      notifyBrowser: Boolean(ruleData.notifyBrowser),
+      autoBlackhole: Boolean(ruleData.autoBlackhole),
+      notifyWebhook: Boolean(ruleData.notifyWebhook),
+      webhookUrl: ruleData.webhookUrl || '',
+      enabled: ruleData.enabled !== undefined ? Boolean(ruleData.enabled) : true,
+      createdTime: new Date().toISOString(),
+      triggerCount: 0,
+      severity: ruleData.severity || 'HIGH'
+    };
+    thresholdRules.unshift(newRule);
+  }
+
+  res.json({ success: true, rules: thresholdRules });
+});
+
+app.post('/api/settings/thresholds/toggle', (req, res) => {
+  const { id } = req.body;
+  const rule = thresholdRules.find(r => r.id === id);
+  if (!rule) {
+    return res.status(404).json({ error: 'Rule not found' });
+  }
+  rule.enabled = !rule.enabled;
+  res.json({ success: true, rule, rules: thresholdRules });
+});
+
+app.delete('/api/settings/thresholds/:id', (req, res) => {
+  const { id } = req.params;
+  thresholdRules = thresholdRules.filter(r => r.id !== id);
+  res.json({ success: true, rules: thresholdRules });
+});
+
+app.post('/api/settings/thresholds/test', (req, res) => {
+  const { ruleId } = req.body;
+  const rule = thresholdRules.find(r => r.id === ruleId) || thresholdRules[0];
+  const hp = honeypots.find(h => h.id === rule.honeypotId) || { id: 'cowrie', name: 'Cowrie (SSH / Telnet)' };
+
+  const testAlert = {
+    id: `trig-${Date.now()}`,
+    ruleId: rule.id,
+    ruleName: `[TEST] ${rule.name}`,
+    honeypotId: hp.id,
+    honeypotName: hp.name,
+    currentAttempts: rule.thresholdLimit + 12,
+    thresholdLimit: rule.thresholdLimit,
+    timestamp: new Date().toISOString(),
+    actionsTaken: [
+      rule.notifyEmail ? 'EMAIL_DISPATCHED' : null,
+      rule.notifyBrowser ? 'BROWSER_ALERT_FIRED' : null,
+      rule.notifyWebhook ? 'WEBHOOK_POSTED' : null,
+      rule.autoBlackhole ? 'AUTO_BLACKHOLE_APPLIED' : null
+    ].filter(Boolean),
+    severity: rule.severity
+  };
+
+  rule.triggerCount += 1;
+  triggeredAlerts.unshift(testAlert);
+  if (triggeredAlerts.length > 50) {
+    triggeredAlerts.pop();
+  }
+
+  res.json({ success: true, alert: testAlert, alerts: triggeredAlerts });
+});
+
+// Bangladesh CIDRs API Endpoint
+app.get('/api/bd/cidrs', (_req, res) => {
+  res.json({
+    country: 'Bangladesh',
+    countryCode: 'BD',
+    registry: 'BTRC / APNIC / BGD e-GOV CIRT',
+    cidrs: [
+      '14.1.100.0/22', '14.128.12.0/22', '27.54.144.0/22', '27.54.148.0/22', '27.123.252.0/22',
+      '27.124.70.0/23', '27.131.12.0/22', '27.147.128.0/17', '36.50.8.0/23', '36.50.10.0/23',
+      '36.255.52.0/22', '37.111.192.0/18', '42.0.4.0/22', '43.224.108.0/22', '43.225.148.0/22',
+      '45.64.132.0/22', '45.112.72.0/22', '49.0.32.0/20', '58.65.224.0/21', '59.152.0.0/21',
+      '103.3.224.0/22', '103.76.96.0/20', '103.107.198.0/23', '103.205.0.0/16', '113.11.0.0/17',
+      '114.130.0.0/17', '115.127.0.0/17', '118.179.0.0/21', '119.30.32.0/20', '120.50.0.0/19',
+      '123.49.0.0/18', '175.29.0.0/16', '180.210.128.0/19', '180.211.128.0/17', '182.48.64.0/19',
+      '202.4.96.0/19', '202.5.32.0/19', '202.51.176.0/20', '203.76.96.0/20', '203.112.192.0/20'
+    ]
+  });
+});
+
+
+export default app;
+
+if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'dist')));
   app.get('*', (_req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
   });
 }
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`[CyberPot] Node server running on http://0.0.0.0:${PORT}`);
-});
+if (process.argv[1]?.endsWith('server.ts')) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`[CyberPot] Node server running on http://0.0.0.0:${PORT}`);
+  });
+}

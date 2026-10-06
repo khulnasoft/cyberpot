@@ -17,7 +17,8 @@ import {
   Activity,
   Layers,
   Terminal,
-  Cpu
+  Cpu,
+  Sliders
 } from 'lucide-react';
 import { Clock } from './Clock';
 import { SystemStatus } from '../types';
@@ -59,6 +60,8 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'spiderfoot', label: 'SpiderFoot', icon: Search, badge: 'OSINT', badgeColor: 'bg-amber-600 text-white', category: 'ops' },
     { id: 'cyberchef', label: 'CyberChef', icon: Wrench, category: 'ops' },
     { id: 'honeypots', label: 'Nodes', icon: ShieldAlert, badge: status ? `${status.activeHoneypots}` : '12', badgeColor: 'bg-gray-700 text-gray-200', category: 'ops' },
+    { id: 'analysis', label: 'Analysis', icon: Activity, badge: 'Vectors', badgeColor: 'bg-[#e20074] text-white', category: 'ops' },
+    { id: 'settings', label: 'Settings', icon: Sliders, badge: 'Alerts', badgeColor: 'bg-purple-600 text-white', category: 'ops' },
   ];
 
   // Quick Command Palette Keyboard Shortcut (Ctrl/Cmd + K)

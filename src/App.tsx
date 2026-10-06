@@ -11,6 +11,8 @@ import { ElasticvueExplorer } from './components/ElasticvueExplorer';
 import { SpiderFootOsint } from './components/SpiderFootOsint';
 import { CyberChefSuite } from './components/CyberChefSuite';
 import { HoneypotControl } from './components/HoneypotControl';
+import { SettingsControl } from './components/SettingsControl';
+import { ThreatAnalysis } from './components/ThreatAnalysis';
 import { SystemStatus, AttackLog } from './types';
 import { Ban, X, Plus } from 'lucide-react';
 
@@ -113,6 +115,16 @@ export function App() {
         {currentTab === 'cyberchef' && <CyberChefSuite />}
         {currentTab === 'honeypots' && (
           <HoneypotControl onOpenBlackholeModal={() => setBlackholeModalOpen(true)} />
+        )}
+        {currentTab === 'analysis' && (
+          <ThreatAnalysis
+            attacks={attacks}
+            onOpenBlackholeModal={() => setBlackholeModalOpen(true)}
+            setCurrentTab={setCurrentTab}
+          />
+        )}
+        {currentTab === 'settings' && (
+          <SettingsControl onOpenBlackholeModal={() => setBlackholeModalOpen(true)} />
         )}
       </main>
 

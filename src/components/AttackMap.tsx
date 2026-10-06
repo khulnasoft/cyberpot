@@ -8,15 +8,19 @@ import {
   Zap,
   Play,
   Pause,
-  Maximize2
+  Maximize2,
+  Flame,
+  Layers
 } from 'lucide-react';
 import { AttackLog } from '../types';
+import { D3Heatmap } from './D3Heatmap';
 
 interface AttackMapProps {
   attacks: AttackLog[];
 }
 
 export const AttackMap: React.FC<AttackMapProps> = ({ attacks }) => {
+  const [mapMode, setMapMode] = useState<'arcs' | 'heatmap'>('heatmap');
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [selectedService, setSelectedService] = useState('all');
   const [selectedSeverity, setSelectedSeverity] = useState('all');
@@ -63,6 +67,31 @@ export const AttackMap: React.FC<AttackMapProps> = ({ attacks }) => {
 
         {/* Filters & Toggles */}
         <div className="flex flex-wrap items-center gap-3">
+          
+          {/* Map Mode Switcher */}
+          <div className="flex items-center bg-black p-1 rounded-xl border border-gray-800">
+            <button
+              onClick={() => setMapMode('heatmap')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 transition-all ${
+                mapMode === 'heatmap'
+                  ? 'bg-red-600 text-white shadow-lg shadow-red-950/50'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Flame className="w-3.5 h-3.5 text-amber-300 animate-pulse" /> D3 Heatmap
+            </button>
+            <button
+              onClick={() => setMapMode('arcs')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 transition-all ${
+                mapMode === 'arcs'
+                  ? 'bg-[#e20074] text-white shadow-lg shadow-[#e20074]/50'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Globe className="w-3.5 h-3.5 text-pink-200" /> Vector Arcs
+            </button>
+          </div>
+
           <div className="flex items-center gap-2 bg-black/60 px-3 py-1.5 rounded-lg border border-gray-800 text-xs">
             <Filter className="w-3.5 h-3.5 text-gray-400" />
             <select
@@ -118,13 +147,17 @@ export const AttackMap: React.FC<AttackMapProps> = ({ attacks }) => {
         </div>
       </div>
 
-      {/* Main Vector Map Display */}
-      <div className="cyber-box p-4 relative overflow-hidden bg-gradient-to-b from-gray-950 to-black">
-        <svg
-          viewBox="0 0 800 450"
-          className="w-full h-auto max-h-[500px] rounded-lg bg-black/80"
-        >
-          {/* Map Grid Background */}
+      {/* Conditional Map View: D3 Global Heatmap OR Vector Arc Stream */}
+      {mapMode === 'heatmap' ? (
+        <D3Heatmap attacks={filteredAttacks} />
+      ) : (
+        /* Main Vector Map Display */
+        <div className="cyber-box p-4 relative overflow-hidden bg-gradient-to-b from-gray-950 to-black">
+          <svg
+            viewBox="0 0 800 450"
+            className="w-full h-auto max-h-[500px] rounded-lg bg-black/80"
+          >
+            {/* Map Grid Background */}
           <defs>
             <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
               <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1f2937" strokeWidth="0.5" />
@@ -242,6 +275,7 @@ export const AttackMap: React.FC<AttackMapProps> = ({ attacks }) => {
           </div>
         )}
       </div>
+      )}
 
       {/* Live Intercept Log Feed */}
       <div className="cyber-box p-6">
