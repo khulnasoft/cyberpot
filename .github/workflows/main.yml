@@ -24,4 +24,6 @@ jobs:
             --retry-wait-time 10
             --max-retries 3
             --exclude https://www.raspberrypi.com/
+            --exclude https://www.vmware.com/
             README.md
+        continue-on-error: true

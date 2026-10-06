@@ -12,7 +12,7 @@ services:
     network_mode: "host"
     cap_add:
      - NET_ADMIN
-    image: "ghcr.io/khulnasoft/honeytrap:24.04.1"
+    image: "docker.io/khulnasoft/honeytrap:24.04.2"
     read_only: true
     volumes:
      - $HOME/cyberpot/data/honeytrap/attacks:/opt/honeytrap/var/attacks

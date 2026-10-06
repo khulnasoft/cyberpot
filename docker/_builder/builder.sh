@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# DEPRECATED: Use scripts/setup_buildx.sh and docker-bake.hcl (see doc/ORGANIZATION_PLAN.md)
+if [ -t 2 ]; then echo "WARNING: $0 is deprecated, use scripts/setup_buildx.sh" >&2; fi
 
 # Got root?
 myWHOAMI=$(whoami)

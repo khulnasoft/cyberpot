@@ -15,3 +15,7 @@ venv/
 # Build artifacts
 /dist/
 /build/
+
+# Env files (requested)
+.env
+.env.example

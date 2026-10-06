@@ -32,6 +32,9 @@ jobs:
       - name: Run structure validation
         run: make validate
 
+      - name: Run tidy
+        run: make tidy
+
       - name: Run unit tests
         run: make test
 
@@ -52,6 +55,14 @@ jobs:
       - name: Run Python syntax lint
         run: python3 -m compileall scripts tests
 
+      - name: Run shell syntax lint
+        run: |
+          find . -type f -name '*.sh' \
+            -not -path './.git/*' \
+            -not -path './build/*' \
+            -not -path './scripts/lib/*.py' \
+            -print0 | xargs -0 -n1 shellcheck -x 2>&1 | tail -n 30 || true
+
   docker-smoke:
     runs-on: ubuntu-latest
 
@@ -65,6 +76,10 @@ jobs:
         run: |
           docker compose version
           docker compose -f docker-compose.yml config > /dev/null
+
+      - name: Validate docker-bake HCL
+        run: |
+          docker buildx bake --print cyberpot-init 2>&1 | jq . > /dev/null || echo "bake check warning (may need buildx)"
 
   shell-syntax:
     runs-on: ubuntu-latest

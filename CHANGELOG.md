@@ -1,4 +1,13 @@
 # Release Notes / Changelog
+## CyberPot 24.04.2 (2026-08-25)
+### Fixes & Improvements
+* **Installer:** Fixed `install.sh:110-167` Ansible tag mismatch (`--tags Debian` filtered all tasks → `ok=2`), hardcoded `HOME/cyberpot` paths, array `=~` checks, unquoted vars, `sudo env` handling, `hwclock --hctosys` best-effort (`failed_when: false`), and `select_compose_preset` fallback for devcontainer.
+* **Playbook:** Fixed `installer/install/cyberpot.yml:9-12` `become: true` gathering `ansible_user_id=root` → added re-gather with `become: false`, fixed `recommended_packages` templating recursion via YAML anchors, fixed `cyberpot.service` src to `{{ playbook_dir }}`, added `supported_dists` to second play, fixed `vm.max_map_count`, `micro` install, and `docker`/`firewalld` idempotence.
+* **Fallback Registries:** Added `scripts/fast_pull_fallback.sh` and `scripts/fast_pull_check.py` — fast `docker manifest inspect` check with order `ghcr.io/khulnasoft-bot → docker.io/khulnasoft → ghcr.io/khulnasoft` + `docker compose up` condition.
+* **Docker Hub:** Retagged all `ghcr.io/khulnasoft/*:24.04.1` and `:24.04` images to `docker.io/khulnasoft/*:24.04.2` + `:latest` (33 IDs, 75 tags). Exported `khulnasoft.txt` (37), `khulnasoft-bot.txt` (39), `khulnasoft-hub.txt` (340 via prefix-split, bypassing 120 anonymous limit).
+* **Version:** Bumped `CYBERPOT_VERSION` `24.04.1 → 24.04.2` (fixes `.env` `==` bug).
+
+---
 CyberPot 24.04.1 brings significant updates and exciting new honeypot additions, especially the LLM-based honeypots **Beelzebub** and **Galah**!
 
 ## New Features

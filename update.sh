@@ -79,7 +79,7 @@ function fuSELFUPDATE () {
 
 function fuCHECK_VERSION () {
 	local myMINVERSION="24.04.0"
-	local myMASTERVERSION="24.04.1"
+	local myMASTERVERSION="24.04.2"
 	echo
 	echo "### Checking for version tag ..."
 	if [ -f "version" ];
@@ -166,9 +166,13 @@ function fuUPDATER () {
 	echo "######$myBLUE This might take a while, please be patient!$myWHITE"
 	fuPULLIMAGES
 	fuREMOVEOLDIMAGES "khulnasoft/*:dev"
-	fuREMOVEOLDIMAGES "ghcr.io/khulnasoft/*:dev"
+	fuREMOVEOLDIMAGES "docker.io/khulnasoft/*:dev"
 	fuREMOVEOLDIMAGES "khulnasoft/*:24.04"
+	fuREMOVEOLDIMAGES "docker.io/khulnasoft/*:24.04"
+	fuREMOVEOLDIMAGES "khulnasoft/*:24.04.1"
+	fuREMOVEOLDIMAGES "docker.io/khulnasoft/*:24.04.1"
 	fuREMOVEOLDIMAGES "ghcr.io/khulnasoft/*:24.04"
+	fuREMOVEOLDIMAGES "ghcr.io/khulnasoft/*:24.04.1"
 	echo
 	echo "### If you made changes to docker-compose.yml please ensure to add them again."
 	echo "### We stored the previous version as backup in $myARCHIVE."

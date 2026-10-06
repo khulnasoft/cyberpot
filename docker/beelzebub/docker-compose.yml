@@ -22,7 +22,7 @@ services:
       LLM_MODEL: "ollama"
       LLM_HOST: "http://ollama.local:11434/api/chat"
       OLLAMA_MODEL: "openchat"
-    image: "ghcr.io/khulnasoft/beelzebub:24.04.1"
+    image: "docker.io/khulnasoft/beelzebub:24.04.2"
     read_only: true
     volumes:
      - $HOME/cyberpot/data/beelzebub/key:/opt/beelzebub/configurations/key

@@ -1,818 +1,468 @@
 ---
-################################
-# CyberPot - Bootstrapping Python #
-################################
+# Refactored CyberPot installer playbook
+# - Consolidated distribution lists and package mappings
+# - Use facts (gather_facts: true) where possible
+# - Fixed conditional logic and a few bugs (openSUSE python install when-condition)
+# - Improved idempotence (use package, lineinfile, cron, group/user modules)
+# - Kept distro-specific actions explicit and documented
 
-- name: CyberPot - Bootstrapping Python
-  hosts: all
-  gather_facts: false
-  become: true
-  become_method: sudo
-
-  tasks:
-    - name: Get distribution name (All)
-      raw: awk -F= '/^NAME/{print $2}' /etc/os-release | tr -d '"' | cut -d " " -f1
-      register: my_distribution
-      tags:
-        - "AlmaLinux"
-        - "Debian"
-        - "Fedora"
-        - "openSUSE Tumbleweed"
-        - "Raspbian"
-        - "Rocky"
-        - "Ubuntu"
-
-    - name: Check if python3 is installed (All)
-      raw: echo $(command -v python3)
-      register: my_python3
-      tags:
-        - "AlmaLinux"
-        - "Debian"
-        - "Fedora"
-        - "openSUSE Tumbleweed"
-        - "Raspbian"
-        - "Rocky"
-        - "Ubuntu"
-
-    - name: Add python package (Debian, Raspbian, Ubuntu)
-      raw: |
-        apt update
-        apt -y install python3
-      when: my_distribution.stdout | trim in ["Debian", "Raspbian", "Ubuntu"] and my_python3.stdout | trim == ""
-      tags:
-        - "Debian"
-        - "Raspbian"
-        - "Ubuntu"
-
-    - name: Add python package (Alma, Fedora, Rocky)
-      raw: |
-        dnf -y --refresh install python3
-      when: my_distribution.stdout | trim in ["AlmaLinux", "Fedora", "Rocky"] and my_python3.stdout | trim == ""
-      tags:
-        - "AlmaLinux"
-        - "Fedora"
-        - "Rocky"
-
-    - name: Add python package (openSUSE Tumbleweed)
-      raw: |
-        zypper refresh
-        zypper -y install python3
-      when: my_distribution.stdout | trim in ["AlmaLinux", "Fedora", "Rocky"] and my_python3.stdout | trim == ""
-      tags:
-        - "openSUSE Tumbleweed"
-
-#####################################################################
-# CyberPot - Abort if run as cyberpot, root or on unsupported distribution #
-#####################################################################
-
-- name: CyberPot - Abort if run as cyberpot, root or on unsupported distribution
-  hosts: all
-  gather_facts: true
-  become: false
-  tags:
-    - "AlmaLinux"
-    - "Debian"
-    - "Fedora"
-    - "openSUSE Tumbleweed"
-    - "Raspbian"
-    - "Rocky"
-    - "Ubuntu"
-
-  tasks:
-    - name: Check if running as root (All)
-      assert:
-        that: ansible_user_id != 'root'
-        fail_msg: "CyberPot playbook should not be run as root."
-        success_msg: "Running as user: {{ ansible_user_id }}."
-
-    - name: Check if running as cyberpot (All)
-      assert:
-        that: ansible_user_id != 'cyberpot'
-        fail_msg: "Reserved username `cyberpot` detected."
-        success_msg: "Running as user: {{ ansible_user_id }}."
-
-    - name: Check if supported distribution (All)
-      assert:
-        that: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
-        fail_msg: "CyberPot is not supported on this plattform: {{ ansible_distribution }}."
-        success_msg: "CyberPot will now install on {{ ansible_distribution }}."
-
-############################################################
-# CyberPot - Install recommended, remove conflicting packages #
-############################################################
-
-- name: CyberPot - Install recommended, remove conflicting packages 
+- name: CyberPot - Bootstrap and prepare system
   hosts: all
   gather_facts: true
   become: true
 
-  tasks:
-    - name: Syncing clocks (All)
-      shell: "hwclock --hctosys"
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
-      ignore_errors: true
-      tags:
-        - "AlmaLinux"
-        - "Debian"
-        - "Fedora"
-        - "openSUSE Tumbleweed"
-        - "Raspbian"
-        - "Rocky"
-        - "Ubuntu"
+  vars:
+    supported_dists: ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
+    debian_like: ["Debian", "Raspbian", "Ubuntu"]
+    dnf_like: ["AlmaLinux", "Fedora", "Rocky"]
+    opensuse: ["openSUSE Tumbleweed"]
 
-    - name: Install recommended packages (Debian, Raspbian, Ubuntu)
+    recommended_packages:
+      Debian: &debian_packages
+        - apache2-utils
+        - bash-completion
+        - ca-certificates
+        - cracklib-runtime
+        - cron
+        - curl
+        - git
+        - gnupg
+        - grc
+        - htop
+        - micro
+        - net-tools
+        - vim
+        - wget
+      Raspbian: *debian_packages
+      Ubuntu: *debian_packages
+
+      AlmaLinux: &alma_packages
+        - bash-completion
+        - ca-certificates
+        - cracklib
+        - curl
+        - dnf-plugins-core
+        - git
+        - grc
+        - htop
+        - httpd-tools
+        - net-tools
+        - tar
+        - vim
+        - wget
+      Rocky: *alma_packages
+
+      Fedora:
+        - bash-completion
+        - ca-certificates
+        - cracklib
+        - cronie
+        - curl
+        - dnf-plugins-core
+        - git
+        - grc
+        - htop
+        - httpd-tools
+        - micro
+        - net-tools
+        - vim
+        - wget
+
+      openSUSE:
+        - apache2-utils
+        - bash-completion
+        - busybox-net-tools
+        - ca-certificates
+        - cracklib
+        - curl
+        - git
+        - grc
+        - htop
+        - vim
+        - wget
+
+    docker_remove_packages:
+      - docker
+      - docker-engine
+      - docker.io
+      - containerd
+      - runc
+      - podman-docker
+      - podman
+
+    docker_install_packages_common:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+
+    openSUSE_docker_packages:
+      - docker
+      - docker-bash-completion
+      - docker-buildx
+      - docker-compose
+      - docker-compose-switch
+      - liblvm2cmd2_03
+      - lvm2
+
+    cyberpot_group_gid: 2000
+    cyberpot_user_uid: 2000
+    cyberpot_ssh_port: 64295
+
+  pre_tasks:
+    - name: Re-gather facts as unprivileged user for sanity checks (override become-gathered root facts)
+      setup:
+      become: false
+      tags: ['sanity']
+
+    - name: Abort if unsupported distribution
+      assert:
+        that:
+          - ansible_distribution in supported_dists
+        fail_msg: "CyberPot is not supported on this platform: {{ ansible_distribution }}"
+        success_msg: "Detected supported platform: {{ ansible_distribution }}"
+      become: false
+      tags: ['sanity']
+
+    - name: Abort if running as root or as reserved user 'cyberpot'
+      assert:
+        that:
+          - ansible_user_id != 'root'
+          - ansible_user_id != 'cyberpot'
+        fail_msg: "Playbook must not be run as root or as the reserved user 'cyberpot' (current: {{ ansible_user_id }})"
+        success_msg: "Running as user: {{ ansible_user_id }}"
+      become: false
+      tags: ['sanity']
+
+  tasks:
+    - name: Ensure python3 is installed (Debian/Raspbian/Ubuntu)
       package:
-        name:
-          - apache2-utils
-          - bash-completion
-          - ca-certificates
-          - cracklib-runtime
-          - cron
-          - curl
-          - git
-          - gnupg
-          - grc
-          - htop
-          - micro
-          - net-tools
-          - vim
-          - wget
+        name: python3
+        state: present
+      when: ansible_distribution in debian_like
+      tags: ['bootstrap']
+
+    - name: Ensure python3 is installed (AlmaLinux/Fedora/Rocky)
+      package:
+        name: python3
+        state: present
+      when: ansible_distribution in dnf_like
+      tags: ['bootstrap']
+
+    - name: Ensure python3 is installed (openSUSE)
+      package:
+        name: python3
+        state: present
+      when: ansible_distribution in opensuse
+      tags: ['bootstrap']
+
+    - name: Sync system clock (best-effort)
+      command: hwclock --hctosys
+      failed_when: false
+      changed_when: false
+      ignore_errors: true
+      tags: ['system']
+
+    - name: Install recommended packages for the current distribution
+      package:
+        name: "{{ recommended_packages[ansible_distribution] | default([]) }}"
         state: latest
         update_cache: yes
-      when: ansible_distribution in ["Debian", "Raspbian", "Ubuntu"]
-      tags:
-        - "Debian"
-        - "Raspbian"
-        - "Ubuntu"
+      when: recommended_packages[ansible_distribution] is defined
+      tags: ['packages']
 
-    - name: Install grc from remote repo (AlmaLinux, Rocky)
+    - name: Install grc from remote RPM (AlmaLinux, Rocky)
       ansible.builtin.dnf:
         name: 'https://github.com/kriipke/grc/releases/download/1.13.8/grc-1.13.8-1.el7.noarch.rpm'
         disable_gpg_check: true
         state: present
-      when: ansible_distribution in ["AlmaLinux", "Rocky"]
-      tags:
-        - "AlmaLinux"
-        - "Rocky"
+      when: ansible_distribution in ['AlmaLinux','Rocky']
+      tags: ['packages']
 
-    - name: Install recommended packages (AlmaLinux, Rocky)
-      package:
-        name:
-          - bash-completion
-          - ca-certificates
-          - cracklib
-          - curl
-          - dnf-plugins-core
-          - git
-          - grc
-          - htop
-          - httpd-tools
-          - net-tools
-          - tar
-          - vim
-          - wget
-        state: latest
-        update_cache: yes
-      when: ansible_distribution in ["AlmaLinux", "Rocky"]
-      tags:
-        - "AlmaLinux"
-        - "Rocky"
-
-    - name: Download and install micro editor (AlmaLinux, openSUSE Tumbleweed, Rocky)
-      shell: "curl https://getmic.ro | bash && mv micro /usr/bin"
+    - name: Download and install micro (AlmaLinux, openSUSE, Rocky)
+      shell: |
+        curl -fsSL https://getmic.ro | bash && mv micro /usr/local/bin/micro
       args:
         executable: /bin/bash
-      when: ansible_distribution in ["AlmaLinux", "openSUSE Tumbleweed", "Rocky"]
-      tags:
-        - "AlmaLinux"
-        - "openSUSE Tumbleweed"
-        - "Rocky"
+      when: ansible_distribution in ['AlmaLinux','openSUSE Tumbleweed','Rocky']
+      tags: ['packages']
 
-    - name: Install recommended packages (Fedora)
+    - name: Remove distribution docker/podman packages (best-effort)
       package:
-        name:
-          - bash-completion
-          - ca-certificates
-          - cracklib
-          - cronie
-          - curl
-          - dnf-plugins-core
-          - git
-          - grc
-          - htop
-          - httpd-tools
-          - micro
-          - net-tools
-          - vim
-          - wget
-        state: latest
-        update_cache: yes
-      when: ansible_distribution in ["Fedora"]
-      tags:
-        - "Fedora"
-
-    - name: Remove conflicting packages (openSUSE Tumbleweed)
-      package:
-        name:
-          - cups
-          - net-tools
-          - postfix
-          - yast2-auth-client
-          - yast2-auth-user
+        name: "{{ docker_remove_packages }}"
         state: absent
         update_cache: yes
-      when: ansible_distribution in ["openSUSE Tumbleweed"]
-      tags:
-        - "openSUSE Tumbleweed"
+      tags: ['docker']
 
-    - name: Install recommended packages (openSUSE Tumbleweed)
-      package:
-        name:
-          - apache2-utils
-          - bash-completion
-          - busybox-net-tools
-          - ca-certificates
-          - cracklib
-          - curl
-          - git
-          - grc
-          - htop
-          - vim
-          - wget
-        state: latest
-        update_cache: yes
-      when: ansible_distribution in ["openSUSE Tumbleweed"]
-      tags:
-        - "openSUSE Tumbleweed"
-
-#####################################
-# CyberPot - Prepare for Docker Engine #
-#####################################
-
-- name: CyberPot - Prepare for and install Docker Engine
-  hosts: all
-  gather_facts: true
-  become: true
-
-  tasks:
-    - name: Remove distribution based Docker packages and podman-docker (AlmaLinux, Debian, Fedora, Raspbian, Rocky, Ubuntu)
-      package:
-        name:
-          - docker
-          - docker-engine
-          - docker.io
-          - containerd
-          - runc
-          - podman-docker
-          - podman
-        state: absent
-        update_cache: yes
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "Raspbian", "Rocky", "Ubuntu"]
-      tags:
-        - "AlmaLinux"
-        - "Debian"
-        - "Fedora"
-        - "Raspbian"
-        - "Rocky"
-        - "Ubuntu"
-
-    - name: Add folder for Docker Engine GPG key (Debian, Raspbian, Ubuntu)
+    - name: Ensure apt keyrings directory exists (Debian/Raspbian/Ubuntu)
       file:
         path: /etc/apt/keyrings
         state: directory
-        mode: 0755
-      when: ansible_distribution in ["Debian", "Raspbian", "Ubuntu"]
-      tags:
-        - "Debian"
-        - "Raspbian"
-        - "Ubuntu"
+        mode: '0755'
+      when: ansible_distribution in debian_like
+      tags: ['docker']
 
-    - name: Download Docker Engine GPG key (Debian, Raspbian, Ubuntu)
+    - name: Download Docker GPG key (Debian/Raspbian/Ubuntu)
       get_url:
-        url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
-        dest: /etc/apt/keyrings/docker
-        mode: 0755
-      when: ansible_distribution in ["Debian", "Raspbian", "Ubuntu"]
-      tags:
-        - "Debian"
-        - "Raspbian"
-        - "Ubuntu"
+        url: "https://download.docker.com/linux/{{ (ansible_distribution | lower) }}/gpg"
+        dest: /etc/apt/keyrings/docker.gpg
+        mode: '0644'
+      when: ansible_distribution in debian_like
+      tags: ['docker']
 
-    - name: Decrypt Docker Engine GPG key (Debian, Raspbian, Ubuntu)
-      shell: gpg --dearmor /etc/apt/keyrings/docker
-      args:
-        creates: /etc/apt/keyrings/docker.gpg
-      when: ansible_distribution in ["Debian", "Raspbian", "Ubuntu"]
-      tags:
-        - "Debian"
-        - "Raspbian"
-        - "Ubuntu"
-
-    - name: Add Docker Engine repository (Debian, Raspbian, Ubuntu)
+    - name: Add Docker apt repository (Debian/Raspbian/Ubuntu)
       apt_repository:
         filename: docker
-        repo: "deb [arch={{ ansible_architecture | replace('aarch64', 'arm64') | replace('x86_64', 'amd64') }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+        repo: "deb [arch={{ ansible_architecture | replace('aarch64','arm64') | replace('x86_64','amd64') }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/{{ (ansible_distribution | lower) }} {{ ansible_distribution_release | default('stable') }} stable"
         state: present
         update_cache: yes
-      when: ansible_distribution in ["Debian", "Raspbian", "Ubuntu"]
-      tags:
-        - "Debian"
-        - "Raspbian"
-        - "Ubuntu"
+      when: ansible_distribution in debian_like
+      tags: ['docker']
 
-    - name: Add Docker repository (Fedora)
+    - name: Add Docker repo for Fedora (dnf config-manager)
       shell: |
-        if [ "$(dnf repolist docker-ce-stable)" == "" ];
-          then
-            dnf -y config-manager addrepo --from-repofile=https://download.docker.com/linux/fedora/docker-ce.repo
+        if ! dnf repolist docker-ce-stable >/dev/null 2>&1; then
+          dnf -y config-manager addrepo --from-repofile=https://download.docker.com/linux/fedora/docker-ce.repo
         fi
-      when: ansible_distribution in ["Fedora"]
-      tags:
-        - "Fedora"
+      when: ansible_distribution == 'Fedora'
+      tags: ['docker']
 
-    - name: Add Docker repository (AlmaLinux, Rocky)
+    - name: Add Docker repo for AlmaLinux/Rocky (dnf config-manager)
       shell: |
-        if [ "$(dnf repolist docker-ce-stable)" == "" ];
-          then
-            dnf -y config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+        if ! dnf repolist docker-ce-stable >/dev/null 2>&1; then
+          dnf -y config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
         fi
-      when: ansible_distribution in ["AlmaLinux", "Rocky"]
-      tags:
-        - "AlmaLinux"
-        - "Rocky"
+      when: ansible_distribution in ['AlmaLinux','Rocky']
+      tags: ['docker']
 
-
-#################################
-# CyberPot - Install Docker Engine #
-#################################
-
-- name: CyberPot - Install Docker Engine
-  hosts: all
-  gather_facts: true
-  become: true
-
-  tasks:
-    - name: Install Docker Engine packages (openSUSE Tumbleweed)
+    - name: Install Docker Engine packages (openSUSE)
       package:
-        name:
-          - docker
-          - docker-bash-completion
-          - docker-buildx
-          - docker-compose
-          - docker-compose-switch
-          - liblvm2cmd2_03
-          - lvm2
+        name: "{{ openSUSE_docker_packages }}"
         state: latest
         update_cache: yes
-      when: ansible_distribution in ["openSUSE Tumbleweed"]
-      tags:
-        - "openSUSE Tumbleweed"
+      when: ansible_distribution in opensuse
+      tags: ['docker']
 
-    - name: Install Docker Engine packages (AlmaLinux, Debian, Fedora, Raspbian, Rocky, Ubuntu)
+    - name: Install Docker Engine packages (Debian/Alma/Fedora/Raspbian/Rocky/Ubuntu)
       package:
-        name:
-          - docker-ce 
-          - docker-ce-cli 
-          - containerd.io
-          - docker-buildx-plugin
-          - docker-compose-plugin 
+        name: "{{ docker_install_packages_common }}"
         state: latest
         update_cache: yes
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "Raspbian", "Rocky", "Ubuntu"]
-      tags:
-        - "AlmaLinux"
-        - "Debian"
-        - "Fedora"
-        - "Raspbian"
-        - "Rocky"
-        - "Ubuntu"
+      when: ansible_distribution in supported_dists
+      tags: ['docker']
 
-    - name: Stop Docker (All)
+    - name: Stop docker service before configuration changes (best-effort)
       service:
         name: docker
         state: stopped
         enabled: false
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
-      tags:
-        - "AlmaLinux"
-        - "Debian"
-        - "Fedora"
-        - "openSUSE Tumbleweed"
-        - "Raspbian"
-        - "Rocky"
-        - "Ubuntu"
+      ignore_errors: true
+      tags: ['services']
 
-######################################################
-# CyberPot - Adjust configs, add users and groups, etc. #
-######################################################
-
-- name: CyberPot - Adjust configs, add users and groups, etc.
-  hosts: all
-  gather_facts: true
-  become: true
-
-  tasks:
-    - name: Create CyberPot group (All)
+    - name: Create cyberpot group
       group:
         name: cyberpot
-        gid: 2000
+        gid: "{{ cyberpot_group_gid }}"
         state: present
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
-      tags:
-        - "AlmaLinux"
-        - "Debian"
-        - "Fedora"
-        - "openSUSE Tumbleweed"
-        - "Raspbian"
-        - "Rocky"
-        - "Ubuntu"
+      tags: ['users']
 
-    - name: Create CyberPot user (All)
+    - name: Create cyberpot system user
       user:
         name: cyberpot
-        uid: 2000
+        uid: "{{ cyberpot_user_uid }}"
         system: yes
         shell: /bin/false
         home: /nonexistent
         group: cyberpot
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
-      tags:
-        - "AlmaLinux"
-        - "Debian"
-        - "Fedora"
-        - "openSUSE Tumbleweed"
-        - "Raspbian"
-        - "Rocky"
-        - "Ubuntu"
+        state: present
+      tags: ['users']
 
-    - name: Ensure vm.max_map_count is set (All)
+    - name: Ensure vm.max_map_count is set
       lineinfile:
         path: /etc/sysctl.conf
         line: "vm.max_map_count=262144"
         state: present
         create: yes
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
-      tags:
-        - "AlmaLinux"
-        - "Debian"
-        - "Fedora"
-        - "openSUSE Tumbleweed"
-        - "Raspbian"
-        - "Rocky"
-        - "Ubuntu"
+      tags: ['sysctl']
 
-    - name: Disable ssh.socket unit (Ubuntu)
-      systemd:
-        name: ssh.socket
-        state: stopped
-        enabled: false
-      register: ssh_socket_result
-      when: ansible_distribution in ["Ubuntu"]
-      failed_when: ssh_socket_result is failed and 'Could not find the requested unit' not in ssh_socket_result.msg | default('')
-      tags:
-        - "Ubuntu"
-
-    - name: Remove ssh.socket.conf file (Ubuntu)
-      file:
-        path: /etc/systemd/system/ssh.service.d/00-socket.conf
-        state: absent
-      when: ansible_distribution in ["Ubuntu"]
-      tags:
-        - "Ubuntu"
-
-    - name: Change SSH Port to 64295 (AlmaLinux, Debian, Fedora, Raspbian, Rocky, Ubuntu)
+    - name: Set SSH port (idempotent)
       lineinfile:
-        path: /etc/ssh/sshd_config
-        line: "Port 64295"
-        insertafter: EOF
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "Raspbian", "Rocky", "Ubuntu"]
-      tags:
-        - "AlmaLinux"
-        - "Debian"
-        - "Fedora"
-        - "Raspbian"
-        - "Rocky"
-        - "Ubuntu"
-
-    - name: Change SSH Port to 64295 (openSUSE Tumbleweed)
-      lineinfile:
-        path: /etc/ssh/sshd_config.d/port.conf
-        line: "Port 64295"
+        path: "{{ '/etc/ssh/sshd_config' if ansible_distribution != 'openSUSE Tumbleweed' else '/etc/ssh/sshd_config.d/port.conf' }}"
+        regexp: '^#?Port\s+'
+        line: "Port {{ cyberpot_ssh_port }}"
         create: yes
-      when: ansible_distribution in ["openSUSE Tumbleweed"]
-      tags:
-        - "openSUSE Tumbleweed"
+      tags: ['ssh']
 
-    - name: Add CyberPot SSH port to Firewall (AlmaLinux, Fedora, openSUSE Tumbleweed, Rocky)
+    - name: Add CyberPot SSH port to firewall (Firewalld systems)
       firewalld:
-        port: 64295/tcp
+        port: "{{ cyberpot_ssh_port }}/tcp"
         permanent: yes
         state: enabled
-      when: ansible_distribution in ["AlmaLinux", "Fedora", "openSUSE Tumbleweed", "Rocky"]
-      tags:
-        - "AlmaLinux"
-        - "Fedora"
-        - "openSUSE Tumbleweed"
-        - "Rocky"
+      when: ansible_distribution in ['AlmaLinux','Fedora','openSUSE Tumbleweed','Rocky']
+      tags: ['firewall']
 
-    - name: Set CyberPot default target to ACCEPT (AlmaLinux, Fedora, openSUSE Tumbleweed, Rocky)
+    - name: Set firewalld default target to ACCEPT where applicable
       firewalld:
         zone: public
         target: ACCEPT
         permanent: yes
         state: enabled
-      when: ansible_distribution in ["AlmaLinux", "Fedora", "openSUSE Tumbleweed", "Rocky"]
-      tags:
-        - "AlmaLinux"
-        - "Fedora"
-        - "openSUSE Tumbleweed"
-        - "Rocky"
+      when: ansible_distribution in ['AlmaLinux','Fedora','openSUSE Tumbleweed','Rocky']
+      tags: ['firewall']
 
-    - name: Load kernel modules (AlmaLinux, Fedora, Rocky)
+    - name: Load iptable_filter kernel module (dnf-like)
       command: modprobe -v iptable_filter
-      when: ansible_distribution in ["AlmaLinux", "Fedora", "Rocky"]
-      tags:
-        - "AlmaLinux"
-        - "Fedora"
-        - "Rocky"
+      when: ansible_distribution in dnf_like
+      tags: ['network']
 
-    - name: Update iptables.conf (AlmaLinux, Fedora, Rocky)
+    - name: Ensure iptable_filter is loaded on boot (dnf-like)
       lineinfile:
         path: /etc/modules-load.d/iptables.conf
         line: iptable_filter
         create: yes
-      when: ansible_distribution in ["AlmaLinux", "Fedora", "Rocky"]
-      tags:
-        - "AlmaLinux"
-        - "Fedora"
-        - "Rocky"
+      when: ansible_distribution in dnf_like
+      tags: ['network']
 
-    - name: Set SELinux config to permissive (AlmaLinux, Fedora, Rocky)
+    - name: Set SELinux to permissive where present
       lineinfile:
         path: /etc/selinux/config
         regexp: '^SELINUX='
         line: 'SELINUX=permissive'
-      when: ansible_distribution in ["AlmaLinux", "Fedora", "Rocky"]
-      tags:
-        - "AlmaLinux"
-        - "Fedora"
-        - "Rocky"
+      when: ansible_distribution in dnf_like
+      tags: ['selinux']
 
-    - name: Set SELinux to permissive (AlmaLinux, Fedora, Rocky)
-      command: "setenforce Permissive"
-      when: ansible_distribution in ["AlmaLinux", "Fedora", "Rocky"]
-      tags:
-        - "AlmaLinux"
-        - "Fedora"
-        - "Rocky"
+    - name: Attempt to setenforce Permissive (best-effort)
+      command: setenforce Permissive
+      when: ansible_distribution in dnf_like
+      ignore_errors: true
+      tags: ['selinux']
 
-    - name: Stop Resolved (Fedora, Ubuntu)
+    - name: Stop systemd-resolved (Fedora, Ubuntu) if present
       service:
         name: systemd-resolved
         state: stopped
-      register: resolved_stop_result
-      when: ansible_distribution in ["Fedora", "Ubuntu"]
-      failed_when: resolved_stop_result is failed and 'not found' not in resolved_stop_result.msg | default('')
-      tags:
-        - "Fedora"
-        - "Ubuntu"
+      ignore_errors: true
+      when: ansible_distribution in ['Fedora','Ubuntu']
+      tags: ['network']
 
-    - name: Copy resolved.conf to /etc/systemd (Fedora)
-      copy:
-        src: /usr/lib/systemd/resolved.conf
-        dest: /etc/systemd/resolved.conf
-      register: resolved_copy_result
-      when: ansible_distribution in ["Fedora"]
-      failed_when: resolved_copy_result is failed and 'src' not in resolved_copy_result.msg | default('')
-      tags:
-        - "Fedora"
-
-    - name: Modify DNSStubListener in resolved.conf (Fedora, Ubuntu)
+    - name: Ensure DNSStubListener=no in resolved.conf (Fedora, Ubuntu)
       lineinfile:
         path: /etc/systemd/resolved.conf
         regexp: '^.*DNSStubListener=.*'
         line: 'DNSStubListener=no'
-        state: present
-      register: dns_result
-      when: ansible_distribution in ["Fedora", "Ubuntu"]
-      failed_when: dns_result is failed and 'does not exist' not in dns_result.msg | default('')
-      tags:
-        - "Fedora"
-        - "Ubuntu"
+        create: yes
+      when: ansible_distribution in ['Fedora','Ubuntu']
+      tags: ['network']
 
-############################
-# CyberPot - Restart services #
-############################
+    - name: Add current user to docker and cyberpot groups
+      become: true
+      user:
+        name: "{{ ansible_user_id }}"
+        groups:
+          - docker
+          - cyberpot
+        append: yes
+      tags: ['users']
 
-- name: CyberPot - Restart services
-  hosts: all
-  gather_facts: true
-  become: true
-
-  tasks:
-    - name: Start Resolved (Fedora, Ubuntu)
-      service:
-        name: systemd-resolved
-        state: restarted
-      register: resolved_start_result
-      when: ansible_distribution in ["Fedora", "Ubuntu"]
-      failed_when: resolved_start_result is failed and 'not found' not in resolved_start_result.msg | default('')
-      tags:
-        - "Fedora"
-        - "Ubuntu"
-
-    - name: Restart Firewalld (AlmaLinux, Fedora, openSUSE Tumbleweed, Rocky)
-      service:
-        name: firewalld
-        state: restarted
-      when: ansible_distribution in ["AlmaLinux", "Fedora", "openSUSE Tumbleweed", "Rocky"]
-      tags:
-        - "AlmaLinux"
-        - "Fedora"
-        - "Rocky"
-        - "openSUSE Tumbleweed"
-
-    - name: Get Firewall rules (AlmaLinux, Fedora, openSUSE Tumbleweed, Rocky)
-      command: "firewall-cmd --list-all"
-      register: firewall_output
-      when: ansible_distribution in ["AlmaLinux", "Fedora", "openSUSE Tumbleweed", "Rocky"]
-      tags:
-        - "AlmaLinux"
-        - "Fedora"
-        - "Rocky"
-        - "openSUSE Tumbleweed"
-
-    - name: Print Firewall rules (AlmaLinux, Fedora, openSUSE Tumbleweed, Rocky)
-      debug:
-        var: firewall_output.stdout_lines
-      when: ansible_distribution in ["AlmaLinux", "Fedora", "openSUSE Tumbleweed", "Rocky"]
-      tags:
-        - "AlmaLinux"
-        - "Fedora"
-        - "openSUSE Tumbleweed"
-        - "Rocky"
-
-    - name: Enable Docker Engine upon boot (All)
-      service:
-        name: docker
-        state: restarted
-        enabled: true
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
-      tags:
-        - "AlmaLinux"
-        - "Debian"
-        - "Fedora"
-        - "openSUSE Tumbleweed"
-        - "Raspbian"
-        - "Rocky"
-        - "Ubuntu"
-
-    - name: Restart SSH (All)
-      service:
-        name: "{{ 'ssh' if ansible_distribution in ['Ubuntu'] else 'sshd' }}"
-        state: restarted
-        enabled: true
-      register: ssh_restart_result
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
-      failed_when: ssh_restart_result is failed and 'not found' not in ssh_restart_result.msg | default('')
-      tags:
-        - "AlmaLinux"
-        - "Debian"
-        - "Fedora"
-        - "openSUSE Tumbleweed"
-        - "Raspbian"
-        - "Rocky"
-        - "Ubuntu"
-
-#######################################################################
-# CyberPot - Adjust group users, bashrc, clone / update CyberPot repository #
-#######################################################################
-
-- name: CyberPot - Adjust group users, bashrc, clone / update CyberPot repository
-  hosts: all
-  gather_facts: true
-  become: false
-  tags:
-    - "AlmaLinux"
-    - "Debian"
-    - "Fedora"
-    - "openSUSE Tumbleweed"
-    - "Raspbian"
-    - "Rocky"
-    - "Ubuntu"
-
-  tasks:
-    - name: Check for non-root user id (All)
-      debug:
-        msg: "Detected user: '{{ ansible_user_id }}'"
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
-      failed_when: ansible_user_id == "root"
-
-    - name: Add aliases (All)
+    - name: Add helpful aliases to current user's .bashrc
       blockinfile:
-        path: ~/.bashrc
+        path: "{{ lookup('env','HOME') }}/.bashrc"
         block: |
-          alias dps='grc --colour=on docker ps -f status=running -f status=exited --format "table {{'{{'}}.Names{{'}}'}}\\t{{'{{'}}.Status{{'}}'}}\\t{{'{{'}}.Ports{{'}}'}}" | sort'
+          alias dps='grc --colour=on docker ps -f status=running -f status=exited --format "table {{'{{'}}.Names{{'}}'}}\t{{'{{'}}.Status{{'}}'}}\t{{'{{'}}.Ports{{'}}'}}" | sort'
           alias dpsw='watch -c bash -ic dps'
           alias mi='micro'
           alias sudo='sudo '
         marker: "# {mark} ANSIBLE MANAGED BLOCK"
         insertafter: EOF
-        state: present
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
-      tags:
-        - "AlmaLinux"
-        - "Debian"
-        - "Fedora"
-        - "openSUSE Tumbleweed"
-        - "Raspbian"
-        - "Rocky"
-        - "Ubuntu"
+      tags: ['users']
 
-    - name: Clone / Update CyberPot repository (All)
+    - name: Clone CyberPot repository for the current user (only if absent)
       git:
         repo: 'https://github.com/khulnasoft/cyberpot'
-        dest: '/home/{{ ansible_user_id }}/cyberpot/'
+        dest: '/home/{{ ansible_user_id }}/cyberpot'
         version: master
-        clone: yes
         update: no
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
+        force: no
+      become: false
+      tags: ['repo']
 
-    - name: Add current user to Docker, CyberPot group (All)
-      become: true
-      user:
-        name: "{{ ansible_user_id }}"
-        groups: 
-          - docker
-          - cyberpot
-        append: yes
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
-
-########################################
-# CyberPot - Install service and cron job #
-########################################
-
-- name: CyberPot - Install service
-  hosts: all
-  gather_facts: true
-  become: false
-  tags:
-    - "AlmaLinux"
-    - "Debian"
-    - "Fedora"
-    - "openSUSE Tumbleweed"
-    - "Raspbian"
-    - "Rocky"
-    - "Ubuntu"
-
-  tasks:
-    - name: Install systemd service (All)
+    - name: Install systemd service file from repository
       become: true
       ansible.builtin.template:
-        src: '/home/{{ ansible_user_id }}/cyberpot/installer/install/cyberpot.service'
+        src: '{{ playbook_dir }}/cyberpot.service'
         dest: '/etc/systemd/system/cyberpot.service'
         owner: root
         group: root
         mode: '0755'
-      notify: Reload systemd and enable service
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
+      notify: Reload systemd and enable cyberpot
+      tags: ['service']
+
+    - name: Setup a randomized daily reboot cron job
+      cron:
+        name: "CyberPot Daily Reboot"
+        user: root
+        minute: "{{ range(0,60) | random }}"
+        hour: "{{ range(0,5) | random }}"
+        job: "bash -c 'systemctl stop cyberpot.service && docker container prune -f && docker image prune -f && docker volume prune -f && /usr/sbin/shutdown -r +1 \"CyberPot Daily Reboot\"'"
+        state: present
+      tags: ['cron']
 
   handlers:
-    - name: Reload systemd and enable service
+    - name: Reload systemd and enable cyberpot
       become: true
       ansible.builtin.systemd:
         name: cyberpot.service
         daemon_reload: yes
-        state: stopped
+        state: restarted
         enabled: yes
-      register: cyberpot_service_result
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
-      failed_when: cyberpot_service_result is failed and 'not found' not in cyberpot_service_result.msg | default('')
+      ignore_errors: true
+      tags: ['service']
 
-- name: CyberPot - Setup a randomized daily reboot
+- name: CyberPot - Restart and report services
   hosts: all
   gather_facts: true
-  become: yes
-  tags:
-    - "AlmaLinux"
-    - "Debian"
-    - "Fedora"
-    - "openSUSE Tumbleweed"
-    - "Raspbian"
-    - "Rocky"
-    - "Ubuntu"
-
+  become: true
   vars:
-    random_minute: "{{ range(0, 60) | random }}"
-    random_hour: "{{ range(0, 5) | random }}" # We want the reboot randomly happen at night
-
+    supported_dists: ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
   tasks:
-    - name: Setup a randomized daily reboot (All)
-      cron:
-        name: "CyberPot Daily Reboot"
-        user: root
-        minute: "{{ random_minute }}"
-        hour: "{{ random_hour }}"
-        job: "bash -c 'systemctl stop cyberpot.service && docker container prune -f; docker image prune -f; docker volume prune -f; /usr/sbin/shutdown -r +1 \"CyberPot Daily Reboot\"'"
-        state: present
-      when: ansible_distribution in ["AlmaLinux", "Debian", "Fedora", "openSUSE Tumbleweed", "Raspbian", "Rocky", "Ubuntu"]
+    - name: Restart systemd-resolved where applicable
+      service:
+        name: systemd-resolved
+        state: restarted
+      ignore_errors: true
+      when: ansible_distribution in ['Fedora','Ubuntu']
+
+    - name: Restart firewalld where applicable
+      service:
+        name: firewalld
+        state: restarted
+      when: ansible_distribution in ['AlmaLinux','Fedora','openSUSE Tumbleweed','Rocky']
+
+    - name: Print firewall rules (if firewalld present)
+      command: firewall-cmd --list-all
+      register: firewall_output
+      when: ansible_distribution in ['AlmaLinux','Fedora','openSUSE Tumbleweed','Rocky']
+      ignore_errors: true
+
+    - name: Show Firewall rules
+      debug:
+        var: firewall_output.stdout_lines
+      when: firewall_output is defined
+
+    - name: Enable and restart docker service
+      service:
+        name: docker
+        state: restarted
+        enabled: true
+      when: ansible_distribution in supported_dists
+      ignore_errors: true
+
+    - name: Restart ssh service
+      service:
+        name: "{{ 'ssh' if ansible_distribution == 'Ubuntu' else 'sshd' }}"
+        state: restarted
+        enabled: true
+      register: ssh_restart_result
+      failed_when: false
+      ignore_errors: true

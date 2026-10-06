@@ -14,7 +14,7 @@ services:
      - wordpot_local
     ports:
      - "80:80"
-    image: "ghcr.io/khulnasoft/wordpot:24.04.1"
+    image: "docker.io/khulnasoft/wordpot:24.04.2"
     read_only: true
     volumes:
      - $HOME/cyberpot/data/wordpot/log:/opt/wordpot/logs/
